@@ -9,7 +9,6 @@ import org.acme.domain.ports.URIInboundPort;
 import org.acme.domain.ports.UriOutboundPort;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
