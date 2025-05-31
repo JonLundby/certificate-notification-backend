@@ -3,7 +3,6 @@ package org.acme.domain.mapper;
 import org.acme.domain.dto.UriEntityDTO;
 import org.acme.domain.model.UriEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import java.util.List;
