@@ -10,8 +10,6 @@ public class UriEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9+\\-.]*:.*$",  // very loose URI syntax
-            message = "Invalid URI")
     @Column(nullable = false, unique = true, length = 2048)
     private String uri;
 

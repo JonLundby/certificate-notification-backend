@@ -3,23 +3,36 @@ package org.acme.inbound;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.acme.domain.ports.URIInboundPort;
+import org.acme.domain.dto.UriEntityDTO;
+import org.acme.domain.mapper.UriMapper;
+import org.acme.domain.model.UriEntity;
+import org.acme.domain.ports.UriInboundPort;
+
+import java.util.List;
 
 @ApplicationScoped
 @Path("/uris")
 public class URIAdapterInbound {
 
     @Inject
-    URIInboundPort uriInboundPort;
+    UriInboundPort uriInboundPort;
+
+    @Inject
+    UriMapper uriMapper;
 
     @POST
     @Transactional
     @Consumes(MediaType.TEXT_PLAIN)
-    public void receiveURIsStr(String uriStr) {
-        uriInboundPort.createURIs(uriStr);
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UriEntityDTO> receiveURIsStr(String uriStr) {
+        List<UriEntity> entityDTOS = uriInboundPort.createURIs(uriStr);
+
+        if (entityDTOS.isEmpty()) {
+            throw new BadRequestException("Invalid uri's in request, please review your list of uri's");
+        }
+
+        return uriMapper.toUriEntityDtoList(entityDTOS);
     }
 }

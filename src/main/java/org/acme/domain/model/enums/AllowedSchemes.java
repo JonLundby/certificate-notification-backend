@@ -21,13 +21,15 @@ public enum AllowedSchemes {
         return scheme;
     }
 
+    // Generates a final hashmap of the enum values
     private static final Map<String,AllowedSchemes> BY_SCHEME =
             Stream.of(values())
                     .collect(Collectors.toMap(
-                            e -> e.scheme.toLowerCase(Locale.ROOT),
+                            e -> e.scheme.toLowerCase(Locale.ROOT), // Locale.ROOT disregards local machine settings and uses java standards
                             e -> e
                     ));
 
+    // Returns false if the scheme is null or not in the BY_SCHEME hashmap
     public static boolean isAllowed(String raw) {
         if (raw == null) return false;
         return BY_SCHEME.containsKey(raw.toLowerCase(Locale.ROOT));
