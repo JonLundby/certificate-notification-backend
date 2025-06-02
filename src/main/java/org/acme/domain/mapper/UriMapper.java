@@ -12,6 +12,6 @@ public interface UriMapper {
 //    @Mapping(target = "id", ignore = true)
     UriEntityDTO toUriEntityDto(UriEntity uriEntity);
 
-    // Mapping lists are dependent on mapping the single objects (therefore no ignore 'id' here but rather on 'toUriEntityDto')
+    // Mapping lists are dependent on mapping the single objects!!
     List<UriEntityDTO> toUriEntityDtoList(List<UriEntity> uriEntities);
 }

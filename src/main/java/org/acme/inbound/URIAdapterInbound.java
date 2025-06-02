@@ -27,12 +27,12 @@ public class URIAdapterInbound {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public List<UriEntityDTO> receiveURIsStr(String uriStr) {
-        List<UriEntity> entityDTOS = uriInboundPort.createURIs(uriStr);
+        List<UriEntity> entities = uriInboundPort.createURIs(uriStr);
 
-        if (entityDTOS.isEmpty()) {
+        if (entities.isEmpty()) {
             throw new BadRequestException("Invalid uri's in request, please review your list of uri's");
         }
 
-        return uriMapper.toUriEntityDtoList(entityDTOS);
+        return uriMapper.toUriEntityDtoList(entities);
     }
 }
