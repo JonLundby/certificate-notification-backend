@@ -4,5 +4,5 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.domain.ports.UriOutboundPort;
 
 @ApplicationScoped
-public class UriAdapterOutbound implements UriOutboundPort {
+public class UriOutboundAdapter implements UriOutboundPort {
 }

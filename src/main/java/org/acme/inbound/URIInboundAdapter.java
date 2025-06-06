@@ -14,7 +14,7 @@ import java.util.List;
 
 @ApplicationScoped
 @Path("/uris")
-public class URIAdapterInbound {
+public class URIInboundAdapter {
 
     @Inject
     UriInboundPort uriInboundPort;

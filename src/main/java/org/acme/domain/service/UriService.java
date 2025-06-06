@@ -2,9 +2,12 @@ package org.acme.domain.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.enterprise.event.Event;
 import org.acme.domain.model.UriEntity;
 import org.acme.domain.model.enums.AllowedSchemes;
+import org.acme.domain.event.UriCreated;
 import org.acme.domain.ports.UriInboundPort;
 import org.acme.domain.ports.UriOutboundPort;
 import org.jboss.logging.Logger;
@@ -22,17 +25,24 @@ public class UriService implements UriInboundPort {
     @Inject
     UriOutboundPort uriOutboundPort;
 
+    @Inject
+    Event<UriCreated> uriCreatedEvent;
+
     @Override
+    @Transactional
     public List<UriEntity> createURIs(String uriStr) {
 
         List<UriEntity> entities = Stream.of(uriStr.split("\\R+")) // \R = split at any line-break
                 .map(String::trim)                                      // trim surrounding spaces
                 .filter(s -> !s.isEmpty())                              // filter out empty lines
                 .map(UriService::asValidUri)                            // throws if malformed
-                .map(this::toUriEntity)                                 // for each 'this' in the list make this an entity
+                .map(this::toUriEntity)                                 // for each 'this' in the list make this a UriEntity
                 .collect(Collectors.toList());                          // collect all into a list
 
         uriOutboundPort.persist(entities);
+
+        // Fire & forget to decouple the certificate retrieval from this methods
+        entities.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
 
         return entities;
     }
@@ -58,6 +68,7 @@ public class UriService implements UriInboundPort {
                     allowedList
             );
 
+            //TODO: return bad request WITH PAYLOAD to client
             throw new BadRequestException(
                     "Scheme must be one of: " + allowedList + "; got: " + uri.getScheme()
             );
