@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 public enum AllowedSchemes {
     HTTPS("https"),
-    IMAP ("imap"),
+    IMAP ("imaps"),
     LDAP ("ldap");
 
     private final String scheme;
