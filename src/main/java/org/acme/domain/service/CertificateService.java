@@ -126,6 +126,8 @@ public class CertificateService implements CertificateInboundPort {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (CertificateParsingException e) {
+            throw new RuntimeException(e);
         }
     }
 
