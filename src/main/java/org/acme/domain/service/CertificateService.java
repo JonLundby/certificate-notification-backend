@@ -7,8 +7,6 @@ import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.domain.ports.CertificateOutboundPort;
 
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.security.auth.x500.X500Principal;
@@ -119,19 +117,16 @@ public class CertificateService implements CertificateInboundPort {
             System.out.println("subject: " + subject);
 
             System.out.println("\n---------- CERT METADATA ----------");
-            System.out.println(certMeta.toString());
+            System.out.println(certMeta);
 
-            // the error seems to occour here
+            // the error seems to occur here
             certificateOutboundPort.persist(certMeta);
 
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (CertificateParsingException e) {
-            throw new RuntimeException(e);
         }
-
     }
 
     private void retrieveLDAPCertificateMetadata(URI uri) {

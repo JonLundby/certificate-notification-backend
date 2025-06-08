@@ -32,7 +32,7 @@ public class CertificateMetadata {
 
 //    @OneToMany
 //    @Column(name = "id_note")
-//    private List<Note> note;
+//    private List<Note> notes;
 
 
     public CertificateMetadata() {
@@ -86,12 +86,12 @@ public class CertificateMetadata {
         this.dateNotAfter = dateNotAfter;
     }
 
-    public List<UriEntity> getUri() {
-        return uri;
+    public List<UriEntity> getUris() {
+        return uris;
     }
 
-    public void setUri(List<UriEntity> uri) {
-        this.uri = uri;
+    public void setUris(List<UriEntity> uris) {
+        this.uris = uris;
     }
 
     @Override
