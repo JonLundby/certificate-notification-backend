@@ -39,22 +39,9 @@ public class CertificateMetadata {
     public CertificateMetadata() {
     }
 
-    public CertificateMetadata(Long id, String issuerSerialNumberId, String type, String subject, Date dateNotBefore, Date dateNotAfter, List<UriEntity> uris) {
-        this.id = id;
-        this.issuerSerialNumberId = issuerSerialNumberId;
-        this.type = type;
-        this.subject = subject;
-        this.dateNotBefore = dateNotBefore;
-        this.dateNotAfter = dateNotAfter;
-        this.uris = uris;
-    }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getIssuerSerialNumberId() {
