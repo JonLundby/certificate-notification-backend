@@ -12,6 +12,10 @@ public class UriEntity {
     @Column(nullable = false, unique = true, length = 2048)
     private String uri;
 
+    @ManyToOne
+    @JoinColumn(name = "certificate_id")
+    private CertificateMetadata certificateMetadata;
+
     public UriEntity() {
     }
 
@@ -29,6 +33,14 @@ public class UriEntity {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public CertificateMetadata getCertificateMetadata() {
+        return certificateMetadata;
+    }
+
+    public void setCertificateMetadata(CertificateMetadata certificateMetadata) {
+        this.certificateMetadata = certificateMetadata;
     }
 
     @Override

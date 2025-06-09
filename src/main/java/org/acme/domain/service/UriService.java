@@ -31,20 +31,30 @@ public class UriService implements UriInboundPort {
     @Override
     @Transactional
     public List<UriEntity> createURIs(String uriStr) {
+        List<String> rawUris = Stream.of(uriStr.split("\\R+"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(UriService::asValidUri)
+                .toList();
 
-        List<UriEntity> entities = Stream.of(uriStr.split("\\R+")) // \R = split at any line-break
-                .map(String::trim)                                      // trim surrounding spaces
-                .filter(s -> !s.isEmpty())                              // filter out empty lines
-                .map(UriService::asValidUri)                            // throws if malformed
-                .map(this::toUriEntity)                                 // for each 'this' in the list make this a UriEntity
-                .collect(Collectors.toList());                          // collect all into a list
+        // Check which URIs already exist
+        List<String> existingUris = rawUris.stream()
+                .map(uriOutboundPort::findByUri) // returns a null value to the existingUris
+                .filter(e -> e != null)
+                .map(UriEntity::getUri)
+                .toList();
 
-        uriOutboundPort.persist(entities);
+        // Filter out existing URIs
+        List<UriEntity> newEntities = rawUris.stream()
+                .filter(uri -> !existingUris.contains(uri))
+                .map(this::toUriEntity)
+                .toList();
 
-        // Fire & forget to decouple the certificate retrieval from this methods
-        entities.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
+        uriOutboundPort.persist(newEntities);
 
-        return entities;
+        newEntities.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
+
+        return newEntities;
     }
 
     /* ---------- HELPERS ---------- */
@@ -72,6 +82,7 @@ public class UriService implements UriInboundPort {
             throw new BadRequestException(
                     "Scheme must be one of: " + allowedList + "; got: " + uri.getScheme()
             );
+            // TODO: consider setting rawUriStr to "" so that
         }
 
         return rawUriStr;

@@ -4,8 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.acme.domain.model.CertificateMetadata;
+import org.acme.domain.model.UriEntity;
 import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.domain.ports.CertificateOutboundPort;
+import org.acme.domain.ports.UriOutboundPort;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -17,12 +19,16 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class CertificateService implements CertificateInboundPort {
 
     @Inject
     CertificateOutboundPort certificateOutboundPort;
+
+    @Inject
+    UriOutboundPort uriOutboundPort;
 
     @Override
     public String getAllCertificates() {
@@ -67,7 +73,7 @@ public class CertificateService implements CertificateInboundPort {
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
         try (SSLSocket socket =
                      (SSLSocket) SSLSocketFactory.getDefault()
-                             .createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 443)) {
+                             .createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 443)) { // TODO: consider only having 443 as possible port!!
 
             // Timer for how long to try connecting (ms)
             socket.setSoTimeout(10_000);
@@ -77,7 +83,14 @@ public class CertificateService implements CertificateInboundPort {
             X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
             CertificateMetadata certMeta = new CertificateMetadata();
 
+            System.out.println(cert.getNotAfter());
+
             // Extracting certificate properties
+            // COMPOSITE KEY - issuer + serialNumber
+            X500Principal issuer = cert.getIssuerX500Principal();
+            String serialNumber = cert.getSerialNumber().toString();
+            certMeta.setIssuerSerialNumberId(issuer.getName() + "#" + serialNumber);
+
             // EXTENDED KEY USAGE - identifies whether it is a client or server certificate or both
             List<String> ekuOids = cert.getExtendedKeyUsage();
             if (ekuOids != null) {
@@ -91,14 +104,14 @@ public class CertificateService implements CertificateInboundPort {
                 } else if (isClient) {
                     certMeta.setType("Client");
                 } else {
-                    certMeta.setType("unknown");
+                    certMeta.setType("Unknown");
                 }
             } else {
-                certMeta.setType("no extended user key id's");
+                certMeta.setType("No extended key usage id's were found");
             }
 
             // SUBJECT
-            // Getting the certificate principal (sort of like a frontpage with common details (CN, OU, O, L, ST & C) about the holder of the certificate)
+            // Getting the certificate principal (sort of like a page with common details (CN, OU, O, L, ST & C) about the holder of the certificate)
             X500Principal principal = cert.getSubjectX500Principal();
             String subject = principal.getName();
             certMeta.setSubject(subject);
@@ -109,19 +122,25 @@ public class CertificateService implements CertificateInboundPort {
             Date dateNotBefore = cert.getNotBefore();
             certMeta.setDateNotBefore(dateNotBefore);
 
+            // Check if the certificate already exists in DB
+            Optional<CertificateMetadata> existingCert =
+                    certificateOutboundPort.findByIssuerSerialNumberId(certMeta.getIssuerSerialNumberId());
 
-            System.out.println("\n---------- REAL CERT ----------");
-            System.out.println(dateNotAfter);
-            System.out.println(dateNotBefore);
-            System.out.println(ekuOids);
-            System.out.println("subject: " + subject);
+            // If certificate metadata already exists then don't save it but set current URI in relation to it
+            // Else save the certificate - if URI has a Certificate_id then remove it and set the URI in relation to the newly found cert metadata
+            UriEntity uriEntity = uriOutboundPort.findByUri(uri.toString()); // getting a jpa transactional 'managed' entity where changes are tracked and persisted when transactional method ends
+            if (existingCert.isPresent()) {
+                // omit saving the certification metadata since it already exists and...
+                // update the uri to have its certificate_id relate to the already existing certificate metadata
+                uriEntity.setCertificateMetadata(existingCert.get());
+            } else {
+                // Save newly retrieved certificate metadata
+                certificateOutboundPort.persist(certMeta);
+                // Set the current URI in relation to the newly saved certificate metadata
+                uriEntity.setCertificateMetadata(certMeta);
+            }
 
-            System.out.println("\n---------- CERT METADATA ----------");
-            System.out.println(certMeta);
-
-            // the error seems to occur here
-            certificateOutboundPort.persist(certMeta);
-
+            // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

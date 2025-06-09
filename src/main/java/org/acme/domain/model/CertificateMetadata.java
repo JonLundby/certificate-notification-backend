@@ -1,8 +1,8 @@
 package org.acme.domain.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,9 +11,11 @@ public class CertificateMetadata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String issuerSerialNumberId;
+    @Column(nullable = false)
     private String type;
-    @NotBlank
+    @Column(nullable = false)
     private String subject;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
@@ -26,9 +28,8 @@ public class CertificateMetadata {
 //    private String passwordLocation; // User edited property (filepath?)
 //    private String privateKeyLocation; // User edited property (filepath?)
 
-    @OneToMany
-    @Column(name = "id_uri")
-    private List<UriEntity> uris;
+    @OneToMany(mappedBy = "certificateMetadata") // no cascading since URIs are long-lived and individual
+    private List<UriEntity> uris = new ArrayList<>();
 
 //    @OneToMany
 //    @Column(name = "id_note")
@@ -38,12 +39,14 @@ public class CertificateMetadata {
     public CertificateMetadata() {
     }
 
-    public CertificateMetadata(Long id, String type, String subject, Date dateNotBefore, Date dateNotAfter) {
+    public CertificateMetadata(Long id, String issuerSerialNumberId, String type, String subject, Date dateNotBefore, Date dateNotAfter, List<UriEntity> uris) {
         this.id = id;
+        this.issuerSerialNumberId = issuerSerialNumberId;
         this.type = type;
         this.subject = subject;
         this.dateNotBefore = dateNotBefore;
         this.dateNotAfter = dateNotAfter;
+        this.uris = uris;
     }
 
     public Long getId() {
@@ -52,6 +55,14 @@ public class CertificateMetadata {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getIssuerSerialNumberId() {
+        return issuerSerialNumberId;
+    }
+
+    public void setIssuerSerialNumberId(String issuerSerialNumberId) {
+        this.issuerSerialNumberId = issuerSerialNumberId;
     }
 
     public String getType() {
@@ -98,10 +109,12 @@ public class CertificateMetadata {
     public String toString() {
         return "CertificateMetadata{" +
                 "\n\tid=" + id +
+                "\n\tissuerSerialNumberId='" + issuerSerialNumberId + '\'' +
                 "\n\ttype='" + type + '\'' +
                 "\n\tsubject='" + subject + '\'' +
                 "\n\tdateNotBefore=" + dateNotBefore +
                 "\n\tdateNotAfter=" + dateNotAfter +
+                "\n\turis=" + uris +
                 '}';
     }
 }
