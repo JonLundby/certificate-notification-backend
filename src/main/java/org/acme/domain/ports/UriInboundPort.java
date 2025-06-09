@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface UriInboundPort {
     List<UriEntity> createURIs(String uriStr);
+    List<UriEntity> dispatchAllUris();
 }

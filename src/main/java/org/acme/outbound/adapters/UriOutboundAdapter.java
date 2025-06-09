@@ -24,5 +24,8 @@ public class UriOutboundAdapter implements UriOutboundPort {
         return uriRepository.find("uri", uri).firstResult();
     }
 
-
+    @Override
+    public List<UriEntity> findAllUris() {
+        return uriRepository.findAll().list();
+    }
 }

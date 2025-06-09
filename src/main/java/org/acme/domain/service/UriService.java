@@ -28,6 +28,18 @@ public class UriService implements UriInboundPort {
     @Inject
     Event<UriCreated> uriCreatedEvent;
 
+    @Inject
+    CertificateService certificateService;
+
+    @Override
+    public List<UriEntity> dispatchAllUris() {
+        List<UriEntity> allUris = uriOutboundPort.findAllUris();
+
+        allUris.forEach(uriEntity -> certificateService.retrieveCertificateMetadataDelegator(uriEntity.getUri()));
+
+        return allUris;
+    }
+
     @Override
     @Transactional
     public List<UriEntity> createURIs(String uriStr) {

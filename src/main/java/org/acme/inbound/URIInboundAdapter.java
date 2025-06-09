@@ -22,6 +22,14 @@ public class URIInboundAdapter {
     @Inject
     UriMapper uriMapper;
 
+    @GET
+    @Path("/scan")
+    @Transactional
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UriEntityDTO> scanUris() {
+        return uriMapper.toUriEntityDtoList(uriInboundPort.dispatchAllUris());
+    }
+
     @POST
     @Transactional
     @Consumes(MediaType.TEXT_PLAIN)

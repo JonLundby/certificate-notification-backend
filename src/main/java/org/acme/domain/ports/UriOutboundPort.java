@@ -8,4 +8,5 @@ public interface UriOutboundPort{
     // All panacheRepository default methods must be declared here to open the usage of them in uriOutboundPort
     void persist(List<UriEntity> uriEntity);
     UriEntity findByUri(String uri);
+    List<UriEntity> findAllUris();
 }
