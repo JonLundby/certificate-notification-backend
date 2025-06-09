@@ -83,8 +83,6 @@ public class CertificateService implements CertificateInboundPort {
             X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
             CertificateMetadata certMeta = new CertificateMetadata();
 
-            System.out.println(cert.getNotAfter());
-
             // Extracting certificate properties
             // COMPOSITE KEY - issuer + serialNumber
             X500Principal issuer = cert.getIssuerX500Principal();
