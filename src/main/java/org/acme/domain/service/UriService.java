@@ -43,6 +43,7 @@ public class UriService implements UriInboundPort {
     @Override
     @Transactional
     public List<UriEntity> createURIs(String uriStr) {
+        // creating initial list of raw URIs trimmed for spaces, empty lines and checked if valid
         List<String> rawUris = Stream.of(uriStr.split("\\R+"))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -51,7 +52,7 @@ public class UriService implements UriInboundPort {
 
         // Check which URIs already exist
         List<String> existingUris = rawUris.stream()
-                .map(uriOutboundPort::findByUri) // returns a null value to the existingUris
+                .map(uriOutboundPort::findByUri) // returns a null value to the existingUris if URI is not found or a UriEntity if URI is found
                 .filter(e -> e != null)
                 .map(UriEntity::getUri)
                 .toList();
