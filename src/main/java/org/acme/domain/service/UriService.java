@@ -94,7 +94,7 @@ public class UriService implements UriInboundPort {
             throw new BadRequestException(
                     "Scheme must be one of: " + allowedList + "; got: " + uri.getScheme()
             );
-            // TODO: consider setting rawUriStr to "" so that
+
         }
 
         return rawUriStr;
