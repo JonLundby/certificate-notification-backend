@@ -6,7 +6,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.acme.domain.dto.UriEntityDTO;
-import org.acme.domain.mapper.UriMapper;
+import org.acme.inbound.mapper.UriMapper;
 import org.acme.domain.model.UriEntity;
 import org.acme.domain.ports.UriInboundPort;
 

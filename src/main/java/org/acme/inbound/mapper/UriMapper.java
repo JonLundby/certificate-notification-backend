@@ -1,4 +1,4 @@
-package org.acme.domain.mapper;
+package org.acme.inbound.mapper;
 
 import org.acme.domain.dto.UriEntityDTO;
 import org.acme.domain.model.UriEntity;

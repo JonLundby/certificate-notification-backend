@@ -71,6 +71,7 @@ public class CertificateService implements CertificateInboundPort {
 
         // java 7 - try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
+        // TODO: Make own validator which can accept selfsigned certificates
         try (SSLSocket socket =
                      (SSLSocket) SSLSocketFactory.getDefault()
                              .createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 443)) { // TODO: consider only having 443 as possible port!!
@@ -79,6 +80,7 @@ public class CertificateService implements CertificateInboundPort {
             socket.setSoTimeout(10_000);
             socket.startHandshake();
 
+            // TODO: getPeerCertificates are only for certificates in javas truststore
             // Instantiating certificate and populating certificateMetadata
             X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
             CertificateMetadata certMeta = new CertificateMetadata();
