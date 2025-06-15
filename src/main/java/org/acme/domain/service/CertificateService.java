@@ -9,12 +9,12 @@ import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.domain.ports.CertificateOutboundPort;
 import org.acme.domain.ports.UriOutboundPort;
 
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -49,13 +49,13 @@ public class CertificateService implements CertificateInboundPort {
         String scheme = uri.getScheme().toLowerCase();
 
         switch (scheme) {
-            case "https":
+            case "https": // port: 443
                 retrieveHTTPSCertificateMetadata(uri);
                 break;
-            case "ldap":
+            case "ldap": // port: 636
                 retrieveLDAPCertificateMetadata(uri);
                 break;
-            case "imaps":
+            case "imaps": // port: 993
                 retrieveIMAPSCertificateMetadata(uri);
                 break;
             default:
@@ -71,81 +71,85 @@ public class CertificateService implements CertificateInboundPort {
 
         // java 7 - try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
-        // TODO: Make own validator which can accept selfsigned certificates
-        try (SSLSocket socket =
-                     (SSLSocket) SSLSocketFactory.getDefault()
-                             .createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 443)) { // TODO: consider only having 443 as possible port!!
+        // TODO: Make own validator which can accept self signed certificates
+        try {
+            SSLSocketFactory sslSocketFactory = createTrustAllSSLSocketFactory();
 
-            // Timer for how long to try connecting (ms)
-            socket.setSoTimeout(10_000);
-            socket.startHandshake();
+            try (SSLSocket socket =
+                     (SSLSocket) sslSocketFactory.createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 443)) { // TODO: consider only having 443 as possible port!!
 
-            // TODO: getPeerCertificates are only for certificates in javas truststore
-            // Instantiating certificate and populating certificateMetadata
-            X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
-            CertificateMetadata certMeta = new CertificateMetadata();
+                // Timer for how long to try connecting (ms)
+                socket.setSoTimeout(10_000);
+                socket.startHandshake();
 
-            // Extracting certificate properties
-            // COMPOSITE KEY - issuer + serialNumber
-            X500Principal issuer = cert.getIssuerX500Principal();
-            String serialNumber = cert.getSerialNumber().toString();
-            certMeta.setIssuerSerialNumberId(issuer.getName() + "#" + serialNumber);
+                // TODO: getPeerCertificates are only for certificates in javas truststore
+                // Instantiating certificate and populating certificateMetadata
+                X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
+                CertificateMetadata certMeta = new CertificateMetadata();
 
-            // EXTENDED KEY USAGE - identifies whether it is a client or server certificate or both
-            List<String> ekuOids = cert.getExtendedKeyUsage();
-            if (ekuOids != null) {
-                boolean isServer = ekuOids.contains("1.3.6.1.5.5.7.3.1");
-                boolean isClient = ekuOids.contains("1.3.6.1.5.5.7.3.2");
+                // Extracting certificate properties
+                // COMPOSITE KEY - issuer + serialNumber
+                X500Principal issuer = cert.getIssuerX500Principal();
+                String serialNumber = cert.getSerialNumber().toString();
+                certMeta.setIssuerSerialNumberId(issuer.getName() + "#" + serialNumber);
 
-                if (isServer && isClient) {
-                    certMeta.setType("Both");
-                } else if (isServer) {
-                    certMeta.setType("Server");
-                } else if (isClient) {
-                    certMeta.setType("Client");
+                // EXTENDED KEY USAGE - identifies whether it is a client or server certificate or both
+                List<String> ekuOids = cert.getExtendedKeyUsage();
+                if (ekuOids != null) {
+                    boolean isServer = ekuOids.contains("1.3.6.1.5.5.7.3.1");
+                    boolean isClient = ekuOids.contains("1.3.6.1.5.5.7.3.2");
+
+                    if (isServer && isClient) {
+                        certMeta.setType("Both");
+                    } else if (isServer) {
+                        certMeta.setType("Server");
+                    } else if (isClient) {
+                        certMeta.setType("Client");
+                    } else {
+                        certMeta.setType("Unknown");
+                    }
                 } else {
-                    certMeta.setType("Unknown");
+                    certMeta.setType("No extended key usage id's were found");
                 }
-            } else {
-                certMeta.setType("No extended key usage id's were found");
+
+                // SUBJECT
+                // Getting the certificate principal (sort of like a page with common details (CN, OU, O, L, ST & C) about the holder of the certificate)
+                X500Principal principal = cert.getSubjectX500Principal();
+                String subject = principal.getName();
+                certMeta.setSubject(subject);
+
+                // VALID FROM-TO
+                Date dateNotAfter = cert.getNotAfter();
+                certMeta.setDateNotAfter(dateNotAfter);
+                Date dateNotBefore = cert.getNotBefore();
+                certMeta.setDateNotBefore(dateNotBefore);
+
+                // Check if the certificate already exists in DB
+                Optional<CertificateMetadata> existingCert =
+                        certificateOutboundPort.findByIssuerSerialNumberId(certMeta.getIssuerSerialNumberId());
+
+                // If certificate metadata already exists then don't save it but set current URI in relation to it
+                // Else save the certificate - if URI has a Certificate_id then remove it and set the URI in relation to the newly found cert metadata
+                UriEntity uriEntity = uriOutboundPort.findByUri(uri.toString()); // getting a jpa transactional 'managed' entity where changes are tracked and persisted when transactional method ends
+                if (existingCert.isPresent()) {
+                    // omit saving the certification metadata since it already exists and...
+                    // update the uri to have its certificate_id relate to the already existing certificate metadata
+                    uriEntity.setCertificateMetadata(existingCert.get());
+                } else {
+                    // Save newly retrieved certificate metadata
+                    certificateOutboundPort.persist(certMeta);
+                    // Set the current URI in relation to the newly saved certificate metadata
+                    uriEntity.setCertificateMetadata(certMeta);
+                }
             }
-
-            // SUBJECT
-            // Getting the certificate principal (sort of like a page with common details (CN, OU, O, L, ST & C) about the holder of the certificate)
-            X500Principal principal = cert.getSubjectX500Principal();
-            String subject = principal.getName();
-            certMeta.setSubject(subject);
-
-            // VALID FROM-TO
-            Date dateNotAfter = cert.getNotAfter();
-            certMeta.setDateNotAfter(dateNotAfter);
-            Date dateNotBefore = cert.getNotBefore();
-            certMeta.setDateNotBefore(dateNotBefore);
-
-            // Check if the certificate already exists in DB
-            Optional<CertificateMetadata> existingCert =
-                    certificateOutboundPort.findByIssuerSerialNumberId(certMeta.getIssuerSerialNumberId());
-
-            // If certificate metadata already exists then don't save it but set current URI in relation to it
-            // Else save the certificate - if URI has a Certificate_id then remove it and set the URI in relation to the newly found cert metadata
-            UriEntity uriEntity = uriOutboundPort.findByUri(uri.toString()); // getting a jpa transactional 'managed' entity where changes are tracked and persisted when transactional method ends
-            if (existingCert.isPresent()) {
-                // omit saving the certification metadata since it already exists and...
-                // update the uri to have its certificate_id relate to the already existing certificate metadata
-                uriEntity.setCertificateMetadata(existingCert.get());
-            } else {
-                // Save newly retrieved certificate metadata
-                certificateOutboundPort.persist(certMeta);
-                // Set the current URI in relation to the newly saved certificate metadata
-                uriEntity.setCertificateMetadata(certMeta);
-            }
-
-            // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
+        // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (CertificateParsingException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -161,5 +165,39 @@ public class CertificateService implements CertificateInboundPort {
         System.out.println("retrieve at: " + uriStr);
 
     }
+
+    // !!! *** !!! *** !!! NOTE THAT THIS IS INSECURE !!! *** !!! *** !!!
+    // Method that creates a type SSLSocketFactory that accepts all certificates
+    private SSLSocketFactory createTrustAllSSLSocketFactory() throws Exception {
+        // custom array of TrustManagers
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                // new X509TrustManager with overridden methods
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        // SSLSocketFactory uses a X509Certificate array with trusted certificates from JVM's truststore but...
+                        // ... here an empty array of X509Certificates are returned which will be interpreted as not caring about trusted CA's
+                        return new X509Certificate[0];
+                    }
+
+                    // following two methods normally checks to validate the trusted CA's in the TrustManager but are here overridden with no functionality...
+                    // ... so an empty TrustManager array is checked for nothing
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        // Trust all client certs
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        // Trust all server certs
+                    }
+                }
+        };
+
+        // Creating a variable with sslContext with "TLS" what??
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        // initializing the ssl context with the empty and overridden TrustManager array trustAllCerts
+        sslContext.init(null, trustAllCerts, new SecureRandom());
+        // returning a SocketFactory with the created sslContext content
+        return sslContext.getSocketFactory();
+    }
+
 
 }
