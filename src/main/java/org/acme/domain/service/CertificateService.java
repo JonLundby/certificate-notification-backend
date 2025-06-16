@@ -60,13 +60,14 @@ public class CertificateService implements CertificateInboundPort {
                 break;
             case "imaps":
                 port = 993;
-                retrieveIMAPSCertificateMetadata(uri, port);
+                retrieveIMAPSCertificate(uri, port);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported scheme: " + scheme);
         }
     }
 
+    // Certificate retrieval for LDAPS & HTTPS
     private void retrieveCertificateViaTLS(URI uri, int port) {
         // Try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
@@ -74,13 +75,12 @@ public class CertificateService implements CertificateInboundPort {
             SSLSocketFactory sslSocketFactory = createTrustAllSSLSocketFactory();
 
             try (SSLSocket socket =
-                     (SSLSocket) sslSocketFactory.createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : port)) { // TODO: consider only having 443 as possible port!!
+                     (SSLSocket) sslSocketFactory.createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : port)) {
 
                 // Timer for how long to try connecting (ms)
                 socket.setSoTimeout(10_000);
                 socket.startHandshake(); // startHandshake only allows TLS 1.2 & 1.3
 
-                // TODO: getPeerCertificates are only for certificates in javas truststore
                 // Instantiating certificate and populating certificateMetadata
                 X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
 
@@ -117,14 +117,7 @@ public class CertificateService implements CertificateInboundPort {
         }
     }
 
-    // not needed for now since ldaps and https are the same procedure for ssl handshake
-//    private void retrieveLDAPCertificateMetadata(URI uri) {
-//
-//        String uriStr = uri.toString();
-//        System.out.println("retrieve at: " + uriStr);
-//    }
-
-    private void retrieveIMAPSCertificateMetadata(URI uri, int port) {
+    private void retrieveIMAPSCertificate(URI uri, int port) {
         String uriStr = uri.toString();
         System.out.println("retrieve at: " + uriStr + ":" + port);
 
@@ -155,7 +148,7 @@ public class CertificateService implements CertificateInboundPort {
                 }
         };
 
-        // Creating a variable with sslContext with "TLS" what??
+        // Creating a sslContext variable with TLS 1.2 & 1.3 as desired connection type (only in java 11+)
         SSLContext sslContext = SSLContext.getInstance("TLS");
         // initializing the ssl context with the empty and overridden TrustManager array trustAllCerts
         sslContext.init(null, trustAllCerts, new SecureRandom());
