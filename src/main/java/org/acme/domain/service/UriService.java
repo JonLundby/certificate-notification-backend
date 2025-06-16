@@ -35,7 +35,14 @@ public class UriService implements UriInboundPort {
     public List<UriEntity> dispatchAllUris() {
         List<UriEntity> allUris = uriOutboundPort.findAllUris();
 
-        allUris.forEach(uriEntity -> certificateService.retrieveCertificateMetadataDelegator(uriEntity.getUri()));
+        allUris.forEach(uriEntity -> {
+            // try catch to make sure that the foreach continues in case of fx not being able to retrieve certificate from insecure TLS 1.1
+            try {
+                certificateService.retrieveCertificateMetadataDelegator(uriEntity.getUri());
+            } catch (Exception e) {
+                logger.warn("Failed to retrieve certificate for: " + uriEntity.getUri(), e);
+            }
+        });
 
         return allUris;
     }

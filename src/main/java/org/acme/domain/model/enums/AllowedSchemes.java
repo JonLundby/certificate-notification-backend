@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public enum AllowedSchemes {
     HTTPS("https"),
     IMAP ("imaps"),
-    LDAP ("ldap");
+    LDAP ("ldaps");
 
     private final String scheme;
 
@@ -21,7 +21,7 @@ public enum AllowedSchemes {
         return scheme;
     }
 
-    // Generates a final hashmap of the enum values
+    // Generates a final property hashmap of the enum values
     private static final Map<String,AllowedSchemes> BY_SCHEME =
             Stream.of(values())
                     .collect(Collectors.toMap(

@@ -47,82 +47,45 @@ public class CertificateService implements CertificateInboundPort {
         }
 
         String scheme = uri.getScheme().toLowerCase();
+        int port;
 
         switch (scheme) {
-            case "https": // port: 443
-                retrieveHTTPSCertificateMetadata(uri);
+            case "https":
+                port = 443;
+                retrieveCertificateViaTLS(uri, port);
                 break;
-            case "ldap": // port: 636
-                retrieveLDAPCertificateMetadata(uri);
+            case "ldaps":
+                port = 636;
+                retrieveCertificateViaTLS(uri, port);
                 break;
-            case "imaps": // port: 993
-                retrieveIMAPSCertificateMetadata(uri);
+            case "imaps":
+                port = 993;
+                retrieveIMAPSCertificateMetadata(uri, port);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported scheme: " + scheme);
         }
     }
 
-    private void retrieveHTTPSCertificateMetadata(URI uri) {
-
-        if (!"https".equalsIgnoreCase(uri.getScheme())) {
-            throw new BadRequestException("Only HTTPS supported");
-        }
-
-        // java 7 - try with resources statement which automatically closes resource/connection
+    private void retrieveCertificateViaTLS(URI uri, int port) {
+        // Try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
-        // TODO: Make own validator which can accept self signed certificates
         try {
             SSLSocketFactory sslSocketFactory = createTrustAllSSLSocketFactory();
 
             try (SSLSocket socket =
-                     (SSLSocket) sslSocketFactory.createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 443)) { // TODO: consider only having 443 as possible port!!
+                     (SSLSocket) sslSocketFactory.createSocket(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : port)) { // TODO: consider only having 443 as possible port!!
 
                 // Timer for how long to try connecting (ms)
                 socket.setSoTimeout(10_000);
-                socket.startHandshake();
+                socket.startHandshake(); // startHandshake only allows TLS 1.2 & 1.3
 
                 // TODO: getPeerCertificates are only for certificates in javas truststore
                 // Instantiating certificate and populating certificateMetadata
                 X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
-                CertificateMetadata certMeta = new CertificateMetadata();
 
-                // Extracting certificate properties
-                // COMPOSITE KEY - issuer + serialNumber
-                X500Principal issuer = cert.getIssuerX500Principal();
-                String serialNumber = cert.getSerialNumber().toString();
-                certMeta.setIssuerSerialNumberId(issuer.getName() + "#" + serialNumber);
-
-                // EXTENDED KEY USAGE - identifies whether it is a client or server certificate or both
-                List<String> ekuOids = cert.getExtendedKeyUsage();
-                if (ekuOids != null) {
-                    boolean isServer = ekuOids.contains("1.3.6.1.5.5.7.3.1");
-                    boolean isClient = ekuOids.contains("1.3.6.1.5.5.7.3.2");
-
-                    if (isServer && isClient) {
-                        certMeta.setType("Both");
-                    } else if (isServer) {
-                        certMeta.setType("Server");
-                    } else if (isClient) {
-                        certMeta.setType("Client");
-                    } else {
-                        certMeta.setType("Unknown");
-                    }
-                } else {
-                    certMeta.setType("No extended key usage id's were found");
-                }
-
-                // SUBJECT
-                // Getting the certificate principal (sort of like a page with common details (CN, OU, O, L, ST & C) about the holder of the certificate)
-                X500Principal principal = cert.getSubjectX500Principal();
-                String subject = principal.getName();
-                certMeta.setSubject(subject);
-
-                // VALID FROM-TO
-                Date dateNotAfter = cert.getNotAfter();
-                certMeta.setDateNotAfter(dateNotAfter);
-                Date dateNotBefore = cert.getNotBefore();
-                certMeta.setDateNotBefore(dateNotBefore);
+                // Parse the retrieved cert to certMetadata
+                CertificateMetadata certMeta = parseCertificateToCertificateMetadata(cert);
 
                 // Check if the certificate already exists in DB
                 Optional<CertificateMetadata> existingCert =
@@ -154,15 +117,16 @@ public class CertificateService implements CertificateInboundPort {
         }
     }
 
-    private void retrieveLDAPCertificateMetadata(URI uri) {
+    // not needed for now since ldaps and https are the same procedure for ssl handshake
+//    private void retrieveLDAPCertificateMetadata(URI uri) {
+//
+//        String uriStr = uri.toString();
+//        System.out.println("retrieve at: " + uriStr);
+//    }
 
+    private void retrieveIMAPSCertificateMetadata(URI uri, int port) {
         String uriStr = uri.toString();
-        System.out.println("retrieve at: " + uriStr);
-    }
-
-    private void retrieveIMAPSCertificateMetadata(URI uri) {
-        String uriStr = uri.toString();
-        System.out.println("retrieve at: " + uriStr);
+        System.out.println("retrieve at: " + uriStr + ":" + port);
 
     }
 
@@ -199,5 +163,47 @@ public class CertificateService implements CertificateInboundPort {
         return sslContext.getSocketFactory();
     }
 
+    private CertificateMetadata parseCertificateToCertificateMetadata(X509Certificate cert) throws CertificateParsingException {
+        CertificateMetadata certMeta = new CertificateMetadata();
+
+        // Extracting certificate properties
+        // COMPOSITE KEY = issuer + serialNumber
+        X500Principal issuer = cert.getIssuerX500Principal();
+        String serialNumber = cert.getSerialNumber().toString();
+        certMeta.setIssuerSerialNumberId(issuer.getName() + "#" + serialNumber);
+
+        // EXTENDED KEY USAGE - identifies whether it is a client or server certificate or both
+        List<String> ekuOids = cert.getExtendedKeyUsage();
+        if (ekuOids != null) {
+            boolean isServer = ekuOids.contains("1.3.6.1.5.5.7.3.1");
+            boolean isClient = ekuOids.contains("1.3.6.1.5.5.7.3.2");
+
+            if (isServer && isClient) {
+                certMeta.setType("Both");
+            } else if (isServer) {
+                certMeta.setType("Server");
+            } else if (isClient) {
+                certMeta.setType("Client");
+            } else {
+                certMeta.setType("Unknown");
+            }
+        } else {
+            certMeta.setType("No extended key usage id's were found");
+        }
+
+        // SUBJECT
+        // Getting the certificate principal (sort of like a page with common details (CN, OU, O, L, ST & C) about the holder of the certificate)
+        X500Principal principal = cert.getSubjectX500Principal();
+        String subject = principal.getName();
+        certMeta.setSubject(subject);
+
+        // VALID FROM-TO
+        Date dateNotAfter = cert.getNotAfter();
+        certMeta.setDateNotAfter(dateNotAfter);
+        Date dateNotBefore = cert.getNotBefore();
+        certMeta.setDateNotBefore(dateNotBefore);
+
+        return certMeta;
+    }
 
 }
