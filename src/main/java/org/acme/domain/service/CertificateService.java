@@ -60,7 +60,8 @@ public class CertificateService implements CertificateInboundPort {
                 break;
             case "imaps":
                 port = 993;
-                retrieveIMAPSCertificate(uri, port);
+//                retrieveIMAPSCertificate(uri, port);
+                retrieveCertificateViaTLS(uri, port);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported scheme: " + scheme);
@@ -117,11 +118,11 @@ public class CertificateService implements CertificateInboundPort {
         }
     }
 
-    private void retrieveIMAPSCertificate(URI uri, int port) {
-        String uriStr = uri.toString();
-        System.out.println("retrieve at: " + uriStr + ":" + port);
-
-    }
+//    private void retrieveIMAPSCertificate(URI uri, int port) {
+//        String uriStr = uri.toString();
+//        System.out.println("retrieve at: " + uriStr + ":" + port);
+//
+//    }
 
     // !!! *** !!! *** !!! NOTE THAT THIS IS INSECURE !!! *** !!! *** !!!
     // Method that creates a type SSLSocketFactory that accepts all certificates
