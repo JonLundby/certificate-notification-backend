@@ -4,4 +4,14 @@
 -- insert into myentity (id, field) values(2, 'field-2');
 -- insert into myentity (id, field) values(3, 'field-3');
 -- alter sequence myentity_seq restart with 4;
-insert into urientity (uri) values('https://www.google.com');
+-- HTTPS
+insert into urientity (uri) values('https://www.example.com');
+-- insert into urientity (uri) values('https://www.eb.dk');
+-- insert into urientity (uri) values('https://www.proshop.dk');
+-- -- LDAPS
+-- insert into urientity (uri) values('ldaps://ldap.jumpcloud.com');
+-- insert into urientity (uri) values('ldaps://ldap.google.com');
+-- -- IMAPS
+-- insert into urientity (uri) values('imaps://outlook.office365.com');
+-- insert into urientity (uri) values('imaps://imap.gmail.com');
+-- insert into urientity (uri) values('imaps://imap.mail.yahoo.com');
