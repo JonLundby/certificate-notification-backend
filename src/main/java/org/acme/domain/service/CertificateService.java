@@ -118,13 +118,7 @@ public class CertificateService implements CertificateInboundPort {
         }
     }
 
-//    private void retrieveIMAPSCertificate(URI uri, int port) {
-//        String uriStr = uri.toString();
-//        System.out.println("retrieve at: " + uriStr + ":" + port);
-//
-//    }
-
-    // !!! *** !!! *** !!! NOTE THAT THIS IS INSECURE !!! *** !!! *** !!!
+    // !!! *** !!! *** !!! NOTE THAT THIS IS PARTIALLY INSECURE !!! *** !!! *** !!!
     // Method that creates a type SSLSocketFactory that accepts all certificates
     private SSLSocketFactory createTrustAllSSLSocketFactory() throws Exception {
         // custom array of TrustManagers
