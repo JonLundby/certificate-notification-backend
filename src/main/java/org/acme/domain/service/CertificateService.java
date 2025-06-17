@@ -69,7 +69,7 @@ public class CertificateService implements CertificateInboundPort {
     }
 
     // Certificate retrieval for LDAPS & HTTPS
-    private void retrieveCertificateViaTLS(URI uri, int port) {
+    protected void retrieveCertificateViaTLS(URI uri, int port) {
         // Try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
         try {
