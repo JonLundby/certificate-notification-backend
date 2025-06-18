@@ -30,6 +30,9 @@ public class CertificateService implements CertificateInboundPort {
     @Inject
     UriOutboundPort uriOutboundPort;
 
+    @Inject
+    NotificationService notificationService;
+
     @Override
     public String getAllCertificates() {
         return "Http GET request called 'getAllCertificates'";
@@ -59,8 +62,8 @@ public class CertificateService implements CertificateInboundPort {
                 retrieveCertificateViaTLS(uri, port);
                 break;
             case "imaps":
+                // TODO: using the standard/default retrieveCertificateViaTLS might not retrieve the same certificate as for clients
                 port = 993;
-//                retrieveIMAPSCertificate(uri, port);
                 retrieveCertificateViaTLS(uri, port);
                 break;
             default:
@@ -99,12 +102,16 @@ public class CertificateService implements CertificateInboundPort {
                     // omit saving the certification metadata since it already exists and...
                     // update the uri to have its certificate_id relate to the already existing certificate metadata
                     uriEntity.setCertificateMetadata(existingCert.get());
+                    notificationService.sendCertificationExpirationNotification(existingCert, uriEntity);
                 } else {
                     // Save newly retrieved certificate metadata
                     certificateOutboundPort.persist(certMeta);
                     // Set the current URI in relation to the newly saved certificate metadata
                     uriEntity.setCertificateMetadata(certMeta);
+                    notificationService.sendCertificationExpirationNotification(Optional.of(certMeta), uriEntity);
                 }
+
+                // Check for expiration date and optionally send notification
             }
         // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
         } catch (UnknownHostException e) {
