@@ -110,8 +110,6 @@ public class CertificateService implements CertificateInboundPort {
                     uriEntity.setCertificateMetadata(certMeta);
                     notificationService.sendCertificationExpirationNotification(Optional.of(certMeta), uriEntity);
                 }
-
-                // Check for expiration date and optionally send notification
             }
         // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
         } catch (UnknownHostException e) {

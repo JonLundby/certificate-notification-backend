@@ -2,6 +2,7 @@ package org.acme.domain.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,9 @@ public class CertificateMetadata {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date dateNotAfter;
+    private LocalDate notifiedAt60Days;
+    private LocalDate notifiedAt30Days;
+    private LocalDate notifiedAt14Days;
 
 //    private String certificateLocation; // User edited property (filepath?)
 //    private String passwordLocation; // User edited property (filepath?)
@@ -82,6 +86,42 @@ public class CertificateMetadata {
 
     public void setDateNotAfter(Date dateNotAfter) {
         this.dateNotAfter = dateNotAfter;
+    }
+
+    public boolean isNotifiedAt60Days() {
+        return notifiedAt60Days != null;
+    }
+
+    public LocalDate getNotifiedAt60Days() {
+        return notifiedAt60Days;
+    }
+
+    public void setNotifiedAt60Days(LocalDate notifiedAt60Days) {
+        this.notifiedAt60Days = notifiedAt60Days;
+    }
+
+    public boolean isNotifiedAt30Days() {
+        return notifiedAt30Days != null;
+    }
+
+    public LocalDate getNotifiedAt30Days() {
+        return notifiedAt30Days;
+    }
+
+    public void setNotifiedAt30Days(LocalDate notifiedAt30Days) {
+        this.notifiedAt30Days = notifiedAt30Days;
+    }
+
+    public boolean isNotifiedAt14Days() {
+        return notifiedAt14Days != null;
+    }
+
+    public LocalDate getNotifiedAt14Days() {
+        return notifiedAt14Days;
+    }
+
+    public void setNotifiedAt14Days(LocalDate notifiedAt14Days) {
+        this.notifiedAt14Days = notifiedAt14Days;
     }
 
     public List<UriEntity> getUris() {

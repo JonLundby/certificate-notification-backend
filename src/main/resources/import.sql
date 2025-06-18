@@ -7,11 +7,11 @@
 -- HTTPS
 -- insert into urientity (uri) values('https://www.example.com');
 -- insert into urientity (uri) values('https://www.eb.dk');
--- insert into urientity (uri) values('https://www.proshop.dk');
+-- insert into urientity (uri) values('https://www.bt.dk');
 -- -- LDAPS
 -- insert into urientity (uri) values('ldaps://ldap.jumpcloud.com');
 -- insert into urientity (uri) values('ldaps://ldap.google.com');
 -- -- IMAPS
-insert into urientity (uri) values('imaps://outlook.office365.com');
+-- insert into urientity (uri) values('imaps://outlook.office365.com');
 -- insert into urientity (uri) values('imaps://imap.gmail.com');
 -- insert into urientity (uri) values('imaps://imap.mail.yahoo.com');

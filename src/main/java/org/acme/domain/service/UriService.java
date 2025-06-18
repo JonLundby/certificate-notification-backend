@@ -60,7 +60,7 @@ public class UriService implements UriInboundPort {
         // Check which URIs already exist
         List<String> existingUris = rawUris.stream()
                 .map(uriOutboundPort::findByUri) // returns a null value to the existingUris if URI is not found or a UriEntity if URI is found
-                .filter(e -> e != null)
+                .filter(e -> e != null) // removing the null values
                 .map(UriEntity::getUri)
                 .toList();
 
