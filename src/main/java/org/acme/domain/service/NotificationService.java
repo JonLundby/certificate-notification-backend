@@ -1,13 +1,10 @@
 package org.acme.domain.service;
 
-import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.Mailer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.UriEntity;
 import org.acme.domain.ports.MailNotificationOutboundPort;
-import org.acme.domain.ports.UriOutboundPort;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -19,9 +16,6 @@ public class NotificationService {
 
     @Inject
     MailNotificationOutboundPort mailNotificationOutboundPort;
-
-    @Inject
-    UriOutboundPort uriOutboundPort;
 
     public void sendCertificationExpirationNotification(Optional<CertificateMetadata> certMetadata, UriEntity uriEntity) {
 
