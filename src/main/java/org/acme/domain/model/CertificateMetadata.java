@@ -3,6 +3,7 @@ package org.acme.domain.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,9 +25,9 @@ public class CertificateMetadata {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date dateNotAfter;
-    private LocalDate notifiedAt60Days;
-    private LocalDate notifiedAt30Days;
-    private LocalDate notifiedAt14Days;
+    private LocalDateTime notifiedAt60Days;
+    private LocalDateTime notifiedAt30Days;
+    private LocalDateTime notifiedAt14Days;
 
 //    private String certificateLocation; // User edited property (filepath?)
 //    private String passwordLocation; // User edited property (filepath?)
@@ -92,11 +93,11 @@ public class CertificateMetadata {
         return notifiedAt60Days != null;
     }
 
-    public LocalDate getNotifiedAt60Days() {
+    public LocalDateTime getNotifiedAt60Days() {
         return notifiedAt60Days;
     }
 
-    public void setNotifiedAt60Days(LocalDate notifiedAt60Days) {
+    public void setNotifiedAt60Days(LocalDateTime notifiedAt60Days) {
         this.notifiedAt60Days = notifiedAt60Days;
     }
 
@@ -104,11 +105,11 @@ public class CertificateMetadata {
         return notifiedAt30Days != null;
     }
 
-    public LocalDate getNotifiedAt30Days() {
+    public LocalDateTime getNotifiedAt30Days() {
         return notifiedAt30Days;
     }
 
-    public void setNotifiedAt30Days(LocalDate notifiedAt30Days) {
+    public void setNotifiedAt30Days(LocalDateTime notifiedAt30Days) {
         this.notifiedAt30Days = notifiedAt30Days;
     }
 
@@ -116,11 +117,11 @@ public class CertificateMetadata {
         return notifiedAt14Days != null;
     }
 
-    public LocalDate getNotifiedAt14Days() {
+    public LocalDateTime getNotifiedAt14Days() {
         return notifiedAt14Days;
     }
 
-    public void setNotifiedAt14Days(LocalDate notifiedAt14Days) {
+    public void setNotifiedAt14Days(LocalDateTime notifiedAt14Days) {
         this.notifiedAt14Days = notifiedAt14Days;
     }
 
