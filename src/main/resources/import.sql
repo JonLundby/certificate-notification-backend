@@ -6,6 +6,7 @@
 -- alter sequence myentity_seq restart with 4;
 -- HTTPS
 -- insert into urientity (uri) values('https://www.example.com');
+-- insert into urientity (uri) values('https://www.caniuse.com/');
 -- insert into urientity (uri) values('https://www.eb.dk');
 -- insert into urientity (uri) values('https://www.bt.dk');
 -- -- LDAPS

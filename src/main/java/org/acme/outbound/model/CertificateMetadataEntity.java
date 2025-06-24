@@ -1,7 +1,6 @@
 package org.acme.outbound.model;
 
 import jakarta.persistence.*;
-import org.acme.domain.model.UriDomainModel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

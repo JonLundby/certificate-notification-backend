@@ -1,23 +1,10 @@
 package org.acme.domain.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import org.acme.outbound.model.CertificateMetadataEntity;
-
 // Do not make JPA annotations here in the domain class!!
-//@Entity
 public class UriDomainModel {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-//    @NotBlank
-//    @Column(nullable = false, unique = true, length = 2048)
     private String uri;
-
-//    @ManyToOne
-//    @JoinColumn(name = "certificate_id")
     private CertificateMetadata certificateMetadata;
-
     public UriDomainModel() {
     }
 

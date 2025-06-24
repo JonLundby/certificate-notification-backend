@@ -28,7 +28,7 @@ public class HttpNotificationOutboundAdapter implements HttpNotificationOutbound
             );
 
             System.out.println("\n---------- SENDING HTTP Notification ----------");
-            System.out.println(payload.toString());
+            System.out.println(payload);
 
             notificationClient.sendNotification(payload);
             logger.info("Notification sent successfully to Mockoon");

@@ -2,7 +2,6 @@ package org.acme.domain.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.UriDomainModel;
@@ -99,9 +98,7 @@ public class CertificateService implements CertificateInboundPort {
                 // If certificate metadata already exists then don't save it but set current URI in relation to it
                 // Else save the certificate - if URI has a Certificate_id then remove it and set the URI in relation to the newly found cert metadata
                 UriDomainModel uriDomainModel = uriOutboundPort.findByUri(uri.toString());
-                Long certMetadataEntityId;
                 if (existingCert.isPresent()) {
-
                     // Update the URI certificate_id column with the id of the already existing certificateMetadata
                     uriOutboundPort.updateCertificateRelation(uriDomainModel.getUri(), existingCert.get().getId());
 
