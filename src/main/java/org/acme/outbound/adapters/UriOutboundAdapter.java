@@ -2,8 +2,13 @@ package org.acme.outbound.adapters;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.acme.domain.model.UriEntity;
+import jakarta.transaction.Transactional;
+import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.UriOutboundPort;
+import org.acme.inbound.mapper.UriMapper;
+import org.acme.outbound.model.CertificateMetadataEntity;
+import org.acme.outbound.model.UriEntity;
+import org.acme.outbound.repository.CertificateMetadataRepository;
 import org.acme.outbound.repository.UriRepository;
 
 import java.util.List;
@@ -12,20 +17,60 @@ import java.util.List;
 public class UriOutboundAdapter implements UriOutboundPort {
 
     @Inject
+    UriMapper uriMapper;
+
+    @Inject
     UriRepository uriRepository;
 
+    @Inject
+    CertificateMetadataRepository certificateMetadataRepository;
+
     @Override
-    public void persist(List<UriEntity> uriEntity) {
+    @Transactional
+    public void persistList(List<UriDomainModel> uriDomainModels) {
+        List<UriEntity> newEntities = uriDomainModels.stream()
+                .map(uriMapper::toUriEntity)
+                .filter(entity -> uriRepository.find("uri", entity.getUri()).firstResult() == null) // skip existing
+                .toList();
+
+        if (!newEntities.isEmpty()) {
+            uriRepository.persist(newEntities);
+        }
+    }
+
+    @Override
+    public void persistSingle(UriDomainModel uriDomainModel) {
+        UriEntity uriEntity = uriMapper.toUriEntity(uriDomainModel);
         uriRepository.persist(uriEntity);
     }
 
     @Override
-    public UriEntity findByUri(String uri) {
-        return uriRepository.find("uri", uri).firstResult();
+    public UriDomainModel findByUri(String uri) {
+        UriEntity e = uriRepository.find("uri", uri).firstResult();
+        return uriMapper.toDomain(e);
     }
 
     @Override
-    public List<UriEntity> findAllUris() {
-        return uriRepository.findAll().list();
+    public List<UriDomainModel> findAllUris() {
+        List<UriEntity> uriEntities = uriRepository.findAll().list();
+        return uriMapper.toUriDomainList(uriEntities);
+    }
+
+    @Override
+    @Transactional
+    public void updateCertificateRelation(String uriStr, Long certMetadataEntityId) {
+        UriEntity uriEntity = uriRepository.find("uri", uriStr).firstResult();
+        if (uriEntity == null) {
+            throw new IllegalArgumentException("URI not found: " + uriStr);
+        }
+
+        // Properly fetch the managed CertificateMetadataEntity
+        CertificateMetadataEntity certEntity = certificateMetadataRepository.findById(certMetadataEntityId);
+        if (certEntity == null) {
+            throw new IllegalArgumentException("Certificate metadata not found: ID = " + certMetadataEntityId);
+        }
+
+        // Set the managed object (no TransientObjectException)
+        uriEntity.setCertificateMetadataEntity(certEntity);
     }
 }

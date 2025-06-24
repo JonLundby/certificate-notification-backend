@@ -2,9 +2,10 @@ package org.acme.domain.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import org.acme.domain.model.CertificateMetadata;
-import org.acme.domain.model.UriEntity;
+import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.domain.ports.CertificateOutboundPort;
 import org.acme.domain.ports.UriOutboundPort;
@@ -91,24 +92,30 @@ public class CertificateService implements CertificateInboundPort {
                 // Parse the retrieved cert to certMetadata
                 CertificateMetadata certMeta = parseCertificateToCertificateMetadata(cert);
 
-                // Check if the certificate already exists in DB
+                // Check if the certificate already exists in DB and store in an optional variable
                 Optional<CertificateMetadata> existingCert =
                         certificateOutboundPort.findByIssuerSerialNumberId(certMeta.getIssuerSerialNumberId());
 
                 // If certificate metadata already exists then don't save it but set current URI in relation to it
                 // Else save the certificate - if URI has a Certificate_id then remove it and set the URI in relation to the newly found cert metadata
-                UriEntity uriEntity = uriOutboundPort.findByUri(uri.toString()); // getting a jpa transactional 'managed' entity where changes are tracked and persisted when transactional method ends
+                UriDomainModel uriDomainModel = uriOutboundPort.findByUri(uri.toString());
+                Long certMetadataEntityId;
                 if (existingCert.isPresent()) {
-                    // omit saving the certification metadata since it already exists and...
-                    // update the uri to have its certificate_id relate to the already existing certificate metadata
-                    uriEntity.setCertificateMetadata(existingCert.get());
-                    notificationService.sendCertificationExpirationNotification(existingCert, uriEntity);
+
+                    // Update the URI certificate_id column with the id of the already existing certificateMetadata
+                    uriOutboundPort.updateCertificateRelation(uriDomainModel.getUri(), existingCert.get().getId());
+
+                    // Send notifications
+                    notificationService.sendCertificationExpirationNotification(existingCert, uriDomainModel);
                 } else {
                     // Save newly retrieved certificate metadata
-                    certificateOutboundPort.persist(certMeta);
-                    // Set the current URI in relation to the newly saved certificate metadata
-                    uriEntity.setCertificateMetadata(certMeta);
-                    notificationService.sendCertificationExpirationNotification(Optional.of(certMeta), uriEntity);
+                    CertificateMetadata savedCertMeta = certificateOutboundPort.persist(certMeta);
+
+                    // Update the URI certificate_id column with the id of the newly persisted certificateMetadata
+                    uriOutboundPort.updateCertificateRelation(uriDomainModel.getUri(), savedCertMeta.getId());
+
+                    // Send notifications
+                    notificationService.sendCertificationExpirationNotification(Optional.of(savedCertMeta), uriDomainModel);
                 }
             }
         // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException

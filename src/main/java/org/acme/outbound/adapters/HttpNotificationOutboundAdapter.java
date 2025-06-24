@@ -3,7 +3,7 @@ package org.acme.outbound.adapters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.domain.model.CertificateMetadata;
-import org.acme.domain.model.UriEntity;
+import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.HttpNotificationOutboundPort;
 import org.acme.outbound.dto.NotificationPayloadDto;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -19,11 +19,11 @@ public class HttpNotificationOutboundAdapter implements HttpNotificationOutbound
     NotificationClient notificationClient;
 
     @Override
-    public void sendHttpNotification(CertificateMetadata certMetadata, UriEntity uriEntity) {
+    public void sendHttpNotification(CertificateMetadata certMetadata, UriDomainModel uriDomainModel) {
         try {
 
             NotificationPayloadDto payload = new NotificationPayloadDto(
-                    uriEntity.getUri(),
+                    uriDomainModel.getUri(),
                     certMetadata.getDateNotAfter().toString()
             );
 

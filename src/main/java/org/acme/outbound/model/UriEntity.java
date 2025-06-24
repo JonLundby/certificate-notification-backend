@@ -1,4 +1,4 @@
-package org.acme.domain.model;
+package org.acme.outbound.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ public class UriEntity {
 
     @ManyToOne
     @JoinColumn(name = "certificate_id")
-    private CertificateMetadata certificateMetadata;
+    private CertificateMetadataEntity certificateMetadataEntity;
 
     public UriEntity() {
     }
@@ -35,12 +35,12 @@ public class UriEntity {
         this.uri = uri;
     }
 
-    public CertificateMetadata getCertificateMetadata() {
-        return certificateMetadata;
+    public CertificateMetadataEntity getCertificateMetadataEntity() {
+        return certificateMetadataEntity;
     }
 
-    public void setCertificateMetadata(CertificateMetadata certificateMetadata) {
-        this.certificateMetadata = certificateMetadata;
+    public void setCertificateMetadataEntity(CertificateMetadataEntity certificateMetadataEntity) {
+        this.certificateMetadataEntity = certificateMetadataEntity;
     }
 
     @Override

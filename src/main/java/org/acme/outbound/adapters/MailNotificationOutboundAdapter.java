@@ -5,7 +5,7 @@ import io.quarkus.mailer.Mailer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.domain.model.CertificateMetadata;
-import org.acme.domain.model.UriEntity;
+import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.MailNotificationOutboundPort;
 
 import java.time.LocalDateTime;
@@ -17,12 +17,12 @@ public class MailNotificationOutboundAdapter implements MailNotificationOutbound
     Mailer mailer;
 
     @Override
-    public void sendMail(CertificateMetadata certMetadata, UriEntity uriEntity, LocalDateTime expiryDate) {
+    public void sendMail(CertificateMetadata certMetadata, UriDomainModel uriDomainModel, LocalDateTime expiryDate) {
         System.out.println("\n---------- SENDING MAIL ----------");
         mailer.send(
                 Mail.withText("someone@example.com",
                         "Certificate expiration notification",
-                        "Certificate for URI " + uriEntity.getUri() + " is expiring on " + expiryDate + ". Please take action soon.")
+                        "Certificate for URI " + uriDomainModel.getUri() + " is expiring on " + expiryDate + ". Please take action soon.")
         );
     }
 

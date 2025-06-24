@@ -1,19 +1,29 @@
-package org.acme.domain.model;
+package org.acme.outbound.model;
 
 import jakarta.persistence.*;
+import org.acme.domain.model.UriDomainModel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-// Do not make JPA annotations here in the domain class!!
-public class CertificateMetadata {
+@Entity
+public class CertificateMetadataEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, unique = true)
     private String issuerSerialNumberId;
+    @Column(nullable = false)
     private String type;
+    @Column(nullable = false)
     private String subject;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date dateNotBefore;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date dateNotAfter;
     private LocalDateTime notifiedAt60Days;
     private LocalDateTime notifiedAt30Days;
@@ -23,16 +33,16 @@ public class CertificateMetadata {
 //    private String passwordLocation; // User edited property (filepath?)
 //    private String privateKeyLocation; // User edited property (filepath?)
 
-    private List<UriDomainModel> uris = new ArrayList<>();
+    @OneToMany(mappedBy = "certificateMetadataEntity") // no cascading since URIs are long-lived and individual
+    private List<UriEntity> uris = new ArrayList<>();
 
 //    @OneToMany
 //    @Column(name = "id_note")
 //    private List<Note> notes;
 
 
-    public CertificateMetadata() {
+    public CertificateMetadataEntity() {
     }
-
 
     public Long getId() {
         return id;
@@ -118,17 +128,17 @@ public class CertificateMetadata {
         this.notifiedAt14Days = notifiedAt14Days;
     }
 
-    public List<UriDomainModel> getUris() {
+    public List<UriEntity> getUris() {
         return uris;
     }
 
-    public void setUris(List<UriDomainModel> uris) {
+    public void setUris(List<UriEntity> uris) {
         this.uris = uris;
     }
 
     @Override
     public String toString() {
-        return "CertificateMetadata{" +
+        return "CertificateMetadataEntity{" +
                 "\n\tid=" + id +
                 "\n\tissuerSerialNumberId='" + issuerSerialNumberId + '\'' +
                 "\n\ttype='" + type + '\'' +

@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.enterprise.event.Event;
-import org.acme.domain.model.UriEntity;
+import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.model.enums.AllowedSchemes;
 import org.acme.domain.event.UriCreated;
 import org.acme.domain.ports.UriInboundPort;
@@ -32,8 +32,8 @@ public class UriService implements UriInboundPort {
     CertificateService certificateService;
 
     @Override
-    public List<UriEntity> dispatchAllUris() {
-        List<UriEntity> allUris = uriOutboundPort.findAllUris();
+    public List<UriDomainModel> dispatchAllUris() {
+        List<UriDomainModel> allUris = uriOutboundPort.findAllUris();
 
         allUris.forEach(uriEntity -> {
             // try catch to make sure that the foreach continues in case of fx not being able to retrieve certificate from insecure TLS 1.1
@@ -49,32 +49,26 @@ public class UriService implements UriInboundPort {
 
     @Override
     @Transactional
-    public List<UriEntity> createURIs(String uriStr) {
-        // creating initial list of raw URIs trimmed for spaces, empty lines and checked if valid
+    public List<UriDomainModel> createURIs(String uriStr) {
+        // Split, trim, filter and validate URIs
         List<String> rawUris = Stream.of(uriStr.split("\\R+"))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .map(UriService::asValidUri)
                 .toList();
 
-        // Check which URIs already exist
-        List<String> existingUris = rawUris.stream()
-                .map(uriOutboundPort::findByUri) // returns a null value to the existingUris if URI is not found or a UriEntity if URI is found
-                .filter(e -> e != null) // removing the null values
-                .map(UriEntity::getUri)
-                .toList();
-
-        // Filter out existing URIs
-        List<UriEntity> newEntities = rawUris.stream()
-                .filter(uri -> !existingUris.contains(uri))
+        // Map to domain models
+        List<UriDomainModel> uriDomainModels = rawUris.stream()
                 .map(this::toUriEntity)
                 .toList();
 
-        uriOutboundPort.persist(newEntities);
+        // Adapter handles filtering of existing URIs
+        uriOutboundPort.persistList(uriDomainModels);
 
-        newEntities.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
+        // Fire events for all (optionally filter inside listener if necessary)
+        uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
 
-        return newEntities;
+        return uriDomainModels;
     }
 
     /* ---------- HELPERS ---------- */
@@ -108,8 +102,8 @@ public class UriService implements UriInboundPort {
         return rawUriStr;
     }
 
-    private UriEntity toUriEntity(String uri) {
-        UriEntity e = new UriEntity();
+    private UriDomainModel toUriEntity(String uri) {
+        UriDomainModel e = new UriDomainModel();
         e.setUri(uri);
         return e;
     }
