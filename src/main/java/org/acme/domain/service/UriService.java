@@ -31,6 +31,10 @@ public class UriService implements UriInboundPort {
     @Inject
     CertificateService certificateService;
 
+    public List<UriDomainModel> findAll() {
+        return uriOutboundPort.findAllUris();
+    }
+
     @Override
     public List<UriDomainModel> dispatchAllUris(boolean sendNotifications) {
         List<UriDomainModel> allUris = uriOutboundPort.findAllUris();

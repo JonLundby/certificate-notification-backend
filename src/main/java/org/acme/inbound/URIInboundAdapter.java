@@ -22,6 +22,13 @@ public class URIInboundAdapter {
     @Inject
     UriMapper uriMapper;
 
+    // Get all URIs
+    @GET
+    @Path("")
+    public List<UriDTO> getAllUris() {
+        return uriMapper.toUriDtoList(uriInboundPort.findAll());
+    }
+
     // Manual scan
     @GET
     @Path("/scan")

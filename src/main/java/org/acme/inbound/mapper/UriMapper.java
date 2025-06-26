@@ -19,7 +19,7 @@ public interface UriMapper {
 
     UriDTO toUriEntityDto(UriDomainModel uriDomainModel);
 
-    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "id", ignore = true)
     List<UriDTO> toUriDtoList(List<UriDomainModel> uriDomainModels);
 
     List<UriEntity> toUriEntityList(List<UriDomainModel> uriDomainModels);

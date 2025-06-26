@@ -34,8 +34,9 @@ public class CertificateService implements CertificateInboundPort {
     NotificationService notificationService;
 
     @Override
-    public String getAllCertificates() {
-        return "Http GET request called 'getAllCertificates'";
+    public List<CertificateMetadata> getAllCertificates() {
+        List<CertificateMetadata> certificateMetadataList = certificateOutboundPort.findAll();
+        return certificateMetadataList;
     }
 
     @Override

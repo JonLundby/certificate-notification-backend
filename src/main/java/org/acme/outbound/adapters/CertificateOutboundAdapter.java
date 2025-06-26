@@ -10,6 +10,7 @@ import org.acme.outbound.model.CertificateMetadataEntity;
 import org.acme.outbound.repository.CertificateMetadataRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -20,6 +21,12 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
     @Inject
     CertificateMetadataRepository certificateMetadataRepository;
+
+    @Override
+    public List<CertificateMetadata> findAll() {
+        List<CertificateMetadata> certificateMetadataList = certificateMetadataMapper.toCertificateMetadataList(certificateMetadataRepository.findAll().list());
+        return certificateMetadataList;
+    }
 
     @Override
     public CertificateMetadata persist(CertificateMetadata certificateMetadata) {
