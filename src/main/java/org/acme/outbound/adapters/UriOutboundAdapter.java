@@ -33,8 +33,6 @@ public class UriOutboundAdapter implements UriOutboundPort {
                 .filter(entity -> uriRepository.find("uri", entity.getUri()).firstResult() == null) // skip existing
                 .toList();
 
-        List<UriDomainModel> uriDomainModelList;
-
         if (!newEntities.isEmpty()) {
             uriRepository.persist(newEntities);
         }
