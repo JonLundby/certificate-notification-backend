@@ -24,8 +24,7 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
     @Override
     public List<CertificateMetadata> findAll() {
-        List<CertificateMetadata> certificateMetadataList = certificateMetadataMapper.toCertificateMetadataList(certificateMetadataRepository.findAll().list());
-        return certificateMetadataList;
+        return certificateMetadataMapper.toCertificateMetadataList(certificateMetadataRepository.findAll().list());
     }
 
     @Override

@@ -35,8 +35,7 @@ public class CertificateService implements CertificateInboundPort {
 
     @Override
     public List<CertificateMetadata> getAllCertificates() {
-        List<CertificateMetadata> certificateMetadataList = certificateOutboundPort.findAll();
-        return certificateMetadataList;
+        return certificateOutboundPort.findAll();
     }
 
     @Override

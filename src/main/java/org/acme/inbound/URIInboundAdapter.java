@@ -25,6 +25,7 @@ public class URIInboundAdapter {
     // Get all URIs
     @GET
     @Path("")
+    @Produces(MediaType.APPLICATION_JSON)
     public List<UriDTO> getAllUris() {
         return uriMapper.toUriDtoList(uriInboundPort.findAll());
     }
