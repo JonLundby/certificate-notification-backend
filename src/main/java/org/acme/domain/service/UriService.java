@@ -62,12 +62,12 @@ public class UriService implements UriInboundPort {
                 .toList();
 
         // Map to domain models
-        List<UriDomainModel> uriDomainModels = rawUris.stream()
+        List<UriDomainModel> uriDomainModelsToPersist = rawUris.stream()
                 .map(this::toUriEntity)
                 .toList();
 
         // Adapter handles filtering of existing URIs
-        uriOutboundPort.persistList(uriDomainModels);
+        List<UriDomainModel> uriDomainModels = uriOutboundPort.persistList(uriDomainModelsToPersist);
 
         // Fire events for all (optionally filter inside listener if necessary)
         uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));

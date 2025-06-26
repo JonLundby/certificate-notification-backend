@@ -24,6 +24,8 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
     @Override
     public List<CertificateMetadata> findAll() {
+        // TODO: this returns all certificateMetadataEntities but with empty 'uris' property due to mapstruct ignore uris for cyclic incidents.
+        //  Consider making custom mapping if uris should be populated properly (uriEntities carry FK to certificateMetadata so that will do for now)
         return certificateMetadataMapper.toCertificateMetadataList(certificateMetadataRepository.findAll().list());
     }
 

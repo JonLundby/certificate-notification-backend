@@ -27,21 +27,19 @@ public class UriOutboundAdapter implements UriOutboundPort {
 
     @Override
     @Transactional
-    public void persistList(List<UriDomainModel> uriDomainModels) {
+    public List<UriDomainModel> persistList(List<UriDomainModel> uriDomainModels) {
         List<UriEntity> newEntities = uriDomainModels.stream()
                 .map(uriMapper::toUriEntity)
                 .filter(entity -> uriRepository.find("uri", entity.getUri()).firstResult() == null) // skip existing
                 .toList();
 
+        List<UriDomainModel> uriDomainModelList;
+
         if (!newEntities.isEmpty()) {
             uriRepository.persist(newEntities);
         }
-    }
 
-    @Override
-    public void persistSingle(UriDomainModel uriDomainModel) {
-        UriEntity uriEntity = uriMapper.toUriEntity(uriDomainModel);
-        uriRepository.persist(uriEntity);
+        return newEntities.stream().map(uriMapper::toDomain).toList();
     }
 
     @Override
