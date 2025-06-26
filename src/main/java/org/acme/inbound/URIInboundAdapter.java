@@ -22,14 +22,16 @@ public class URIInboundAdapter {
     @Inject
     UriMapper uriMapper;
 
+    // Manual scan
     @GET
     @Path("/scan")
     @Transactional
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<UriDTO> scanUris() {
-        return uriMapper.toUriDtoList(uriInboundPort.dispatchAllUris());
+    @Produces(MediaType.APPLICATION_JSON) //
+    public List<UriDTO> scanUris(@QueryParam("notify") @DefaultValue("false") boolean notify) {
+        return uriMapper.toUriDtoList(uriInboundPort.dispatchAllUris(notify));
     }
 
+    // Upload URIs
     @POST
     @Transactional
     @Consumes(MediaType.TEXT_PLAIN)

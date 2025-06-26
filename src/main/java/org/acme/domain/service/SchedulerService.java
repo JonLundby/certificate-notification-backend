@@ -19,7 +19,7 @@ public class SchedulerService {
     @Inject
     UriInboundPort uriInboundPort;
 
-    @Scheduled(cron = "0 35 20 * * ?") // Second Minute Hour Day DayOfWeek(1-7 or SUN-SAT)
+    @Scheduled(cron = "0 32 12 * * ?") // Second Minute Hour Day DayOfWeek(1-7 or SUN-SAT)
     @Transactional
     public void scheduledUriScan() {
         LocalDateTime localDateTimeBefore = LocalDateTime.now();
@@ -27,7 +27,7 @@ public class SchedulerService {
 
         logger.info("URI scanning initiated on: " + localDateTimeBefore);
 
-        uriInboundPort.dispatchAllUris();
+        uriInboundPort.dispatchAllUris(true);
 
         Duration duration = Duration.between(localTimeBefore, LocalTime.now());
 

@@ -32,13 +32,13 @@ public class UriService implements UriInboundPort {
     CertificateService certificateService;
 
     @Override
-    public List<UriDomainModel> dispatchAllUris() {
+    public List<UriDomainModel> dispatchAllUris(boolean sendNotifications) {
         List<UriDomainModel> allUris = uriOutboundPort.findAllUris();
 
         allUris.forEach(uriEntity -> {
             // try catch to make sure that the foreach continues in case of fx not being able to retrieve certificate from insecure TLS 1.1
             try {
-                certificateService.retrieveCertificateMetadataDelegator(uriEntity.getUri());
+                certificateService.retrieveCertificateMetadataDelegator(uriEntity.getUri(), sendNotifications);
             } catch (Exception e) {
                 logger.warn("Failed to retrieve certificate for: " + uriEntity.getUri(), e);
             }

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface UriInboundPort {
     List<UriDomainModel> createURIs(String uriStr);
-    List<UriDomainModel> dispatchAllUris();
+    List<UriDomainModel> dispatchAllUris(boolean sendNotifications);
 }

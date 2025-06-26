@@ -39,20 +39,20 @@ class CertificateServiceTest {
         CertificateService spyService = Mockito.spy(certificateService);
 
         // Act - don't make actual TLS handshake during the test
-        doNothing().when(spyService).retrieveCertificateViaTLS(uri, port);
+        doNothing().when(spyService).retrieveCertificateViaTLS(uri, port, false);
 
         // Act - spyService calls the retrieveCertificateMetadataDelegator with uri string
-        spyService.retrieveCertificateMetadataDelegator(uriStr);
+        spyService.retrieveCertificateMetadataDelegator(uriStr, false);
 
         // Assert - verify that spyService invoked a call to retrieveCertificateViaTLS after calling the delegator above
-        verify(spyService).retrieveCertificateViaTLS(uri, port);
+        verify(spyService).retrieveCertificateViaTLS(uri, port, false);
     }
 
     // Test that malformed uri throws BadRequestException
     @Test
     void testRetrieveCertificateMetadataDelegator_invalidUri_shouldThrowBadRequest() {
         assertThrows(BadRequestException.class, () -> {
-            certificateService.retrieveCertificateMetadataDelegator("not a uri");
+            certificateService.retrieveCertificateMetadataDelegator("not a uri", false);
         });
     }
 
@@ -60,7 +60,7 @@ class CertificateServiceTest {
     @Test
     void testRetrieveCertificateMetadataDelegator_unknownScheme_shouldThrow() {
         assertThrows(UnsupportedOperationException.class, () -> {
-            certificateService.retrieveCertificateMetadataDelegator("ftp://example.com");
+            certificateService.retrieveCertificateMetadataDelegator("ftp://example.com", false);
         });
     }
 }

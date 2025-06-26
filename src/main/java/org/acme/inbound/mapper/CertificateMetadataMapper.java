@@ -11,10 +11,10 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI, uses = UriMapper.class)
 public interface CertificateMetadataMapper {
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "uris", source = "uris")
+    @Mapping(target = "uris", ignore = true) // ignore mapping back to source
     CertificateMetadataEntity toEntity(CertificateMetadata certificateMetadata);
 
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "uris", source = "uris")
+    @Mapping(target = "uris", ignore = true) // ignore mapping back to source
     CertificateMetadata toDomain(CertificateMetadataEntity certificateMetadataEntity);
 }

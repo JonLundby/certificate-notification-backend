@@ -15,8 +15,6 @@ public class URICreatedListener {
 
     @Transactional // Transactional since it is sort of like an inbound adapter within the domain/service layer
     void onCreatingUri(@ObservesAsync UriCreated event) {
-        certificateInboundPort.retrieveCertificateMetadataDelegator(event.uri());
+        certificateInboundPort.retrieveCertificateMetadataDelegator(event.uri(), false);
     }
 }
-
-

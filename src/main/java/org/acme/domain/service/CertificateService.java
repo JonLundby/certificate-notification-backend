@@ -39,7 +39,7 @@ public class CertificateService implements CertificateInboundPort {
     }
 
     @Override
-    public void retrieveCertificateMetadataDelegator(String uriStr) {
+    public void retrieveCertificateMetadataDelegator(String uriStr, boolean sendNotifications) {
         // TODO: consider making unit test of retrieveCertificateMetadataDelegator and/or the retrieveHTTPSCertificateMetadata etc.
 
         URI uri;
@@ -55,16 +55,16 @@ public class CertificateService implements CertificateInboundPort {
         switch (scheme) {
             case "https":
                 port = 443;
-                retrieveCertificateViaTLS(uri, port);
+                retrieveCertificateViaTLS(uri, port, sendNotifications);
                 break;
             case "ldaps":
                 port = 636;
-                retrieveCertificateViaTLS(uri, port);
+                retrieveCertificateViaTLS(uri, port, sendNotifications);
                 break;
             case "imaps":
                 // TODO: using the standard/default retrieveCertificateViaTLS might not retrieve the same certificate as for clients
                 port = 993;
-                retrieveCertificateViaTLS(uri, port);
+                retrieveCertificateViaTLS(uri, port, sendNotifications);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported scheme: " + scheme);
@@ -72,7 +72,7 @@ public class CertificateService implements CertificateInboundPort {
     }
 
     // Certificate retrieval for LDAPS & HTTPS
-    protected void retrieveCertificateViaTLS(URI uri, int port) {
+    protected void retrieveCertificateViaTLS(URI uri, int port, boolean sendNotifications) {
         // Try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
         try {
@@ -103,7 +103,9 @@ public class CertificateService implements CertificateInboundPort {
                     uriOutboundPort.updateCertificateRelation(uriDomainModel.getUri(), existingCert.get().getId());
 
                     // Send notifications
-                    notificationService.sendCertificationExpirationNotification(existingCert, uriDomainModel);
+                    if (sendNotifications) {
+                        notificationService.sendCertificationExpirationNotification(existingCert, uriDomainModel);
+                    }
                 } else {
                     // Save newly retrieved certificate metadata
                     CertificateMetadata savedCertMeta = certificateOutboundPort.persist(certMeta);
@@ -112,8 +114,11 @@ public class CertificateService implements CertificateInboundPort {
                     uriOutboundPort.updateCertificateRelation(uriDomainModel.getUri(), savedCertMeta.getId());
 
                     // Send notifications
-                    notificationService.sendCertificationExpirationNotification(Optional.of(savedCertMeta), uriDomainModel);
+                    if (sendNotifications) {
+                        notificationService.sendCertificationExpirationNotification(Optional.of(savedCertMeta), uriDomainModel);
+                    }
                 }
+
             }
         // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
         } catch (UnknownHostException e) {
