@@ -20,10 +20,6 @@ public class NoteEntity {
     public NoteEntity() {
     }
 
-    public NoteEntity(String text) {
-        this.text = text;
-    }
-
     public long getId() {
         return id;
     }

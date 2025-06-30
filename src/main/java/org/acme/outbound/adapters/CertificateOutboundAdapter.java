@@ -29,9 +29,6 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
     @Inject
     CertificateMetadataRepository certificateMetadataRepository;
 
-    @Inject
-    NoteRepository noteRepository;
-
     @Override
     public List<CertificateMetadata> findAll() {
         // TODO: this returns all certificateMetadataEntities but with empty 'uris' property due to mapstruct ignore uris for cyclic incidents.
