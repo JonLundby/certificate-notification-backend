@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.acme.domain.model.CertificateMetadata;
+import org.acme.domain.model.Note;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.domain.ports.CertificateOutboundPort;
@@ -17,6 +18,7 @@ import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +38,13 @@ public class CertificateService implements CertificateInboundPort {
     @Override
     public List<CertificateMetadata> getAllCertificates() {
         return certificateOutboundPort.findAll();
+    }
+
+    @Override
+    public void addNoteToCertificate(long certificateId, Note note) {
+        LocalDateTime now = LocalDateTime.now();
+        note.setLocalDateTimeStamp(now);
+        certificateOutboundPort.addNoteToCertificate(certificateId, note);
     }
 
     @Override

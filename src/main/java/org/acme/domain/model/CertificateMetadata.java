@@ -23,9 +23,7 @@ public class CertificateMetadata {
 
     private List<UriDomainModel> uris = new ArrayList<>();
 
-//    @OneToMany
-//    @Column(name = "id_note")
-//    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
 
 
     public CertificateMetadata() {
@@ -122,6 +120,14 @@ public class CertificateMetadata {
 
     public void setUris(List<UriDomainModel> uris) {
         this.uris = uris;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
     }
 
     @Override

@@ -35,9 +35,8 @@ public class CertificateMetadataEntity {
     @OneToMany(mappedBy = "certificateMetadataEntity") // no cascading since URIs are long-lived and individual
     private List<UriEntity> uris = new ArrayList<>();
 
-//    @OneToMany
-//    @Column(name = "id_note")
-//    private List<Note> notes;
+    @OneToMany(mappedBy = "certificateMetadataEntity", cascade = CascadeType.ALL) // cascade all so all notes are deleted if a certificate is deleted
+    private List<NoteEntity> notes = new ArrayList<>();
 
 
     public CertificateMetadataEntity() {
@@ -133,6 +132,14 @@ public class CertificateMetadataEntity {
 
     public void setUris(List<UriEntity> uris) {
         this.uris = uris;
+    }
+
+    public List<NoteEntity> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<NoteEntity> notes) {
+        this.notes = notes;
     }
 
     @Override

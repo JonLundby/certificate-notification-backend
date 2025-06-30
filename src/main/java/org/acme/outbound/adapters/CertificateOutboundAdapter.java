@@ -4,10 +4,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.domain.model.CertificateMetadata;
+import org.acme.domain.model.Note;
 import org.acme.domain.ports.CertificateOutboundPort;
 import org.acme.inbound.mapper.CertificateMetadataMapper;
+import org.acme.inbound.mapper.NoteMapper;
 import org.acme.outbound.model.CertificateMetadataEntity;
+import org.acme.outbound.model.NoteEntity;
 import org.acme.outbound.repository.CertificateMetadataRepository;
+import org.acme.outbound.repository.NoteRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +24,13 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
     CertificateMetadataMapper certificateMetadataMapper;
 
     @Inject
+    NoteMapper noteMapper;
+
+    @Inject
     CertificateMetadataRepository certificateMetadataRepository;
+
+    @Inject
+    NoteRepository noteRepository;
 
     @Override
     public List<CertificateMetadata> findAll() {
@@ -65,5 +75,24 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
             case 14 -> entity.setNotifiedAt14Days(now);
             default -> throw new IllegalArgumentException("Unsupported daysNotification: " + daysNotification);
         }
+    }
+
+    @Override
+    @Transactional
+    public void addNoteToCertificate(long certificateId, Note note) {
+
+        // Load the owning certificate from the database
+        CertificateMetadataEntity certificateMetadataEntity = certificateMetadataRepository.findById(certificateId);
+        if (certificateMetadataEntity == null) {
+            throw new IllegalArgumentException("Could not find certificate with id: " + certificateId);
+        }
+
+        NoteEntity noteEntity = noteMapper.toEntity(note);
+
+        // Setting the certificate_id FK on the note
+        noteEntity.setCertificateMetadataEntity(certificateMetadataEntity);
+
+        // triggers hibernate to update the database based on the owning certificate and persist the note through that due to cascadeType.All
+        certificateMetadataEntity.getNotes().add(noteEntity);
     }
 }
