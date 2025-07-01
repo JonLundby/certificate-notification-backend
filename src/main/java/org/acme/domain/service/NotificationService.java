@@ -33,17 +33,23 @@ public class NotificationService {
             long daysUntilExpiry = ChronoUnit.DAYS.between(now, expiryDate);
 
             if (daysUntilExpiry <= 60 && daysUntilExpiry > 30 && !cert.isNotifiedAt60Days()) {
+
                 mailNotificationOutboundPort.sendMail(cert, uriDomainModel, expiryDate);
                 httpNotificationOutboundPort.sendHttpNotification(cert, uriDomainModel);
                 certificateOutboundPort.updateNotifiedAt(cert, now, 60);
+
             } else if (daysUntilExpiry <= 30 && daysUntilExpiry > 14 && !cert.isNotifiedAt30Days()) {
+
                 mailNotificationOutboundPort.sendMail(cert, uriDomainModel, expiryDate);
                 httpNotificationOutboundPort.sendHttpNotification(cert, uriDomainModel);
-                cert.setNotifiedAt30Days(now);
+                certificateOutboundPort.updateNotifiedAt(cert, now, 30);
+
             } else if (daysUntilExpiry <= 14 && !cert.isNotifiedAt14Days()) {
+
                 mailNotificationOutboundPort.sendMail(cert, uriDomainModel, expiryDate);
                 httpNotificationOutboundPort.sendHttpNotification(cert, uriDomainModel);
-                cert.setNotifiedAt14Days(now);
+                certificateOutboundPort.updateNotifiedAt(cert, now, 14);
+
             }
         });
     }
