@@ -3,6 +3,7 @@ package org.acme.domain.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import org.acme.domain.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.model.UriDomainModel;
@@ -35,11 +36,13 @@ public class CertificateService implements CertificateInboundPort {
     @Inject
     NotificationService notificationService;
 
+    // GET ALL CERTIFICATES
     @Override
     public List<CertificateMetadata> getAllCertificates() {
         return certificateOutboundPort.findAll();
     }
 
+    // ADD NOTE
     @Override
     public void addNoteToCertificate(long certificateId, Note note) {
         LocalDateTime now = LocalDateTime.now();
@@ -47,6 +50,13 @@ public class CertificateService implements CertificateInboundPort {
         certificateOutboundPort.addNoteToCertificate(certificateId, note);
     }
 
+    // UPDATE EDITABLE PROPERTIES
+    @Override
+    public void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
+        certificateOutboundPort.updateEditableCertificateProperties(certificateId, certificateUpdateDTO);
+    }
+
+    // DELEGATOR
     @Override
     public void retrieveCertificateMetadataDelegator(String uriStr, boolean sendNotifications) {
         // TODO: consider making unit test of retrieveCertificateMetadataDelegator and/or the retrieveHTTPSCertificateMetadata etc.
@@ -80,7 +90,7 @@ public class CertificateService implements CertificateInboundPort {
         }
     }
 
-    // Certificate retrieval for LDAPS & HTTPS
+    // CERTIFICATE RETRIEVAL FOR HTTPS, LDAPS & IMAPS
     protected void retrieveCertificateViaTLS(URI uri, int port, boolean sendNotifications) {
         // Try with resources statement which automatically closes resource/connection
         // casting to (SSLSocket) because the factory returns a Socket class and SSLSocket is a subclass of Socket
@@ -174,6 +184,7 @@ public class CertificateService implements CertificateInboundPort {
         return sslContext.getSocketFactory();
     }
 
+    // CERTIFICATE PARSE TO METADATA
     private CertificateMetadata parseCertificateToCertificateMetadata(X509Certificate cert) throws CertificateParsingException {
         CertificateMetadata certMeta = new CertificateMetadata();
 

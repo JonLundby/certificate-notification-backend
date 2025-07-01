@@ -27,10 +27,11 @@ public class CertificateMetadataEntity {
     private LocalDateTime notifiedAt60Days;
     private LocalDateTime notifiedAt30Days;
     private LocalDateTime notifiedAt14Days;
-
-//    private String certificateLocation; // User edited property (filepath?)
-//    private String passwordLocation; // User edited property (filepath?)
-//    private String privateKeyLocation; // User edited property (filepath?)
+    // ---------- EDITABLE PROPERTIES ---------- \\
+    private String certificateLocation; // User edited property (filepath?)
+    private String passwordLocation; // User edited property (filepath?)
+    private String privateKeyLocation; // User edited property (filepath?)
+    // ---------- -------------------- ---------- \\
 
     @OneToMany(mappedBy = "certificateMetadataEntity") // no cascading since URIs are long-lived and individual
     private List<UriEntity> uris = new ArrayList<>();
@@ -124,6 +125,30 @@ public class CertificateMetadataEntity {
 
     public void setNotifiedAt14Days(LocalDateTime notifiedAt14Days) {
         this.notifiedAt14Days = notifiedAt14Days;
+    }
+
+    public String getCertificateLocation() {
+        return certificateLocation;
+    }
+
+    public void setCertificateLocation(String certificateLocation) {
+        this.certificateLocation = certificateLocation;
+    }
+
+    public String getPasswordLocation() {
+        return passwordLocation;
+    }
+
+    public void setPasswordLocation(String passwordLocation) {
+        this.passwordLocation = passwordLocation;
+    }
+
+    public String getPrivateKeyLocation() {
+        return privateKeyLocation;
+    }
+
+    public void setPrivateKeyLocation(String privateKeyLocation) {
+        this.privateKeyLocation = privateKeyLocation;
     }
 
     public List<UriEntity> getUris() {

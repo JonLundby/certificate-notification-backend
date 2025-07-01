@@ -21,4 +21,5 @@ public interface CertificateMetadataMapper {
     CertificateMetadata toDomain(CertificateMetadataEntity certificateMetadataEntity);
 
     List<CertificateMetadata> toCertificateMetadataList(List<CertificateMetadataEntity> certificateMetadataEntities);
+
 }

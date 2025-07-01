@@ -1,5 +1,6 @@
 package org.acme.domain.ports;
 
+import org.acme.domain.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 
@@ -13,4 +14,5 @@ public interface CertificateOutboundPort {
     Optional<CertificateMetadata> findByIssuerSerialNumberId(String issuerSerialNumberId);
     void updateNotifiedAt(CertificateMetadata certificateMetadata, LocalDateTime now, int daysNotification);
     void addNoteToCertificate(long certificateId, Note note);
+    void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO);
 }

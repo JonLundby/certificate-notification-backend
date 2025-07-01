@@ -3,6 +3,7 @@ package org.acme.outbound.adapters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.acme.domain.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.CertificateOutboundPort;
@@ -91,5 +92,22 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
         // triggers hibernate to update the database based on the owning certificate and persist the note through that due to cascadeType.All
         certificateMetadataEntity.getNotes().add(noteEntity);
+    }
+
+    @Override
+    @Transactional
+    public void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
+        CertificateMetadataEntity entity = certificateMetadataRepository.findById(certificateId);
+        if (entity == null) {
+            throw new IllegalArgumentException("Could not find certificate with id: " + certificateId);
+        }
+        // TODO: Consider mapping from dto(or rather domain model due to corresponding changes in the inbound adapter) to domain model if need...
+        //  ...for more editable properties and/or service logic occurs
+
+        entity.setCertificateLocation(certificateUpdateDTO.getCertificateLocation());
+        entity.setPasswordLocation(certificateUpdateDTO.getPasswordLocation());
+        entity.setPrivateKeyLocation(certificateUpdateDTO.getPrivateKeyLocation());
+
+        certificateMetadataRepository.persist(entity);
     }
 }
