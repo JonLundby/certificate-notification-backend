@@ -1,4 +1,4 @@
-package org.acme.inbound;
+package org.acme.inbound.adapters;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
