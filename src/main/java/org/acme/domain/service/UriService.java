@@ -2,7 +2,6 @@ package org.acme.domain.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.enterprise.event.Event;
 import org.acme.domain.model.UriDomainModel;
