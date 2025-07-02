@@ -2,10 +2,9 @@ package org.acme.domain.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.acme.domain.model.Note;
 import org.acme.domain.ports.NoteInboundPort;
 import org.acme.domain.ports.NoteOutboundPort;
-import org.acme.outbound.model.NoteEntity;
+import org.acme.inbound.dto.NoteDTOResponse;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class NoteService implements NoteInboundPort {
     NoteOutboundPort noteOutboundPort;
 
     @Override
-    public List<NoteEntity> getAllNotes() {
+    public List<NoteDTOResponse> getAllNotes() {
         return noteOutboundPort.getAllNotes();
     }
 }
