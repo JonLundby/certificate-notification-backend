@@ -9,7 +9,6 @@
 -- insert into urientity (uri) values('https://www.caniuse.com/');
 -- insert into urientity (uri) values('https://www.eb.dk');
 -- insert into urientity (uri) values('https://www.bt.dk');
--- insert into urientity (uri) values('https://www.bt.dk');
 
 -- SPECIAL CASES
     -- SAME CERTIFICATE

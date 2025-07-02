@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI)
 public interface NoteMapper {
     NoteEntity toEntity(Note note);
+    @Mapping(target = "certificateMetadataEntity", ignore = true)
     Note toDomain(NoteEntity noteEntity);
     List<Note> toDomainList(List<NoteEntity> noteEntities);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "certificateMetadataEntity", ignore = true)
-    @Mapping(target = "localDateTimeStamp", ignore = true)
     Note toDomainFromDTO(NoteDTO noteDTO);
 }
