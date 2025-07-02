@@ -1,8 +1,8 @@
-package org.acme.domain.dto;
+package org.acme.inbound.dto;
 
 import java.time.LocalDateTime;
 
-public class NoteDTO {
+public class NoteDTORequest {
     private LocalDateTime localDateTimeStamp;
     private String text;
 

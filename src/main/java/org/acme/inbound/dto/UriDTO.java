@@ -1,4 +1,4 @@
-package org.acme.domain.dto;
+package org.acme.inbound.dto;
 
 public class UriDTO {
     private long id;

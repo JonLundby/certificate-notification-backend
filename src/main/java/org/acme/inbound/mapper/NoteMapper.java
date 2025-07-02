@@ -1,7 +1,8 @@
 package org.acme.inbound.mapper;
 
-import org.acme.domain.dto.NoteDTO;
+import org.acme.inbound.dto.NoteDTORequest;
 import org.acme.domain.model.Note;
+import org.acme.inbound.dto.NoteDTOResponse;
 import org.acme.outbound.model.NoteEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,5 +18,10 @@ public interface NoteMapper {
     List<Note> toDomainList(List<NoteEntity> noteEntities);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "certificateMetadataEntity", ignore = true)
-    Note toDomainFromDTO(NoteDTO noteDTO);
+    Note toDomainFromDTO(NoteDTORequest noteDTORequest);
+
+    @Mapping(target = "certificateId_fk", source = "certificateMetadataEntity.id")
+    NoteDTOResponse toNoteDTOResponse(NoteEntity noteEntity);
+
+    List<NoteDTOResponse> toNoteDTOResponseList(List<NoteEntity> entities);
 }

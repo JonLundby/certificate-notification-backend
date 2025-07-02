@@ -3,7 +3,7 @@ package org.acme.domain.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
-import org.acme.domain.dto.CertificateUpdateDTO;
+import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.model.UriDomainModel;

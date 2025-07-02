@@ -20,9 +20,7 @@ public class NoteOutboundAdapter implements NoteOutboundPort {
     NoteMapper noteMapper;
 
     @Override
-    public List<Note> getAllNotes() {
-        List<NoteEntity> entities = noteRepository.findAll().list();
-
-        return noteMapper.toDomainList(entities);
+    public List<NoteEntity> getAllNotes() {
+        return noteRepository.findAll().list();
     }
 }

@@ -1,6 +1,6 @@
 package org.acme.domain.ports;
 
-import org.acme.domain.dto.CertificateUpdateDTO;
+import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 

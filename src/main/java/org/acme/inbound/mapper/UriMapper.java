@@ -1,6 +1,6 @@
 package org.acme.inbound.mapper;
 
-import org.acme.domain.dto.UriDTO;
+import org.acme.inbound.dto.UriDTO;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.outbound.model.UriEntity;
 import org.mapstruct.Mapper;

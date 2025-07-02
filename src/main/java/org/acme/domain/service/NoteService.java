@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.NoteInboundPort;
 import org.acme.domain.ports.NoteOutboundPort;
+import org.acme.outbound.model.NoteEntity;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class NoteService implements NoteInboundPort {
     NoteOutboundPort noteOutboundPort;
 
     @Override
-    public List<Note> getAllNotes() {
+    public List<NoteEntity> getAllNotes() {
         return noteOutboundPort.getAllNotes();
     }
 }

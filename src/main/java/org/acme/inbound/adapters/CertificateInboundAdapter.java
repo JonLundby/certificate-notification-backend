@@ -4,8 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.acme.domain.dto.CertificateUpdateDTO;
-import org.acme.domain.dto.NoteDTO;
+import org.acme.inbound.dto.CertificateUpdateDTO;
+import org.acme.inbound.dto.NoteDTORequest;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.CertificateInboundPort;
@@ -32,8 +32,8 @@ public class CertificateInboundAdapter {
     @POST
     @Path("/{id}/notes")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addNoteToCertificate(@PathParam("id") long certificateId, NoteDTO noteDto) {
-        Note note = noteMapper.toDomainFromDTO(noteDto);
+    public void addNoteToCertificate(@PathParam("id") long certificateId, NoteDTORequest noteDtoRequest) {
+        Note note = noteMapper.toDomainFromDTO(noteDtoRequest);
         certificateInboundPort.addNoteToCertificate(certificateId, note);
     }
 
