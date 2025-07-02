@@ -1,10 +1,11 @@
 package org.acme.inbound.dto;
 
-public class UriDTO {
+public class UriDTOResponse {
     private long id;
     private String uri;
+    private long certificateId;
 
-    public UriDTO() {
+    public UriDTOResponse() {
     }
 
     public Long getId() {
@@ -15,7 +16,7 @@ public class UriDTO {
         this.id = id;
     }
 
-    public UriDTO(String uri) {
+    public UriDTOResponse(String uri) {
         this.uri = uri;
     }
 
@@ -25,5 +26,13 @@ public class UriDTO {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public long getCertificateId() {
+        return certificateId;
+    }
+
+    public void setCertificateId(long certificateId) {
+        this.certificateId = certificateId;
     }
 }

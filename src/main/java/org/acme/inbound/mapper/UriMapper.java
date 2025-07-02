@@ -1,6 +1,6 @@
 package org.acme.inbound.mapper;
 
-import org.acme.inbound.dto.UriDTO;
+import org.acme.inbound.dto.UriDTOResponse;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.outbound.model.UriEntity;
 import org.mapstruct.Mapper;
@@ -17,9 +17,10 @@ public interface UriMapper {
     @Mapping(source = "certificateMetadataEntity", target = "certificateMetadata")
     UriDomainModel toDomain(UriEntity uriEntity);
 
-    UriDTO toUriEntityDto(UriDomainModel uriDomainModel);
+    @Mapping(target = "certificateId", source = "certificateMetadata.id")
+    UriDTOResponse toUriDtoResponse(UriDomainModel uriDomainModel);
 
-    List<UriDTO> toUriDtoList(List<UriDomainModel> uriDomainModels);
+    List<UriDTOResponse> toUriDTOResponseList(List<UriDomainModel> uriDomainModels);
 
     List<UriDomainModel> toUriDomainList(List<UriEntity> uriEntities);
 }

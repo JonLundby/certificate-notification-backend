@@ -20,7 +20,7 @@ public interface NoteMapper {
     @Mapping(target = "certificateMetadataEntity", ignore = true)
     Note toDomainFromDTO(NoteDTORequest noteDTORequest);
 
-    @Mapping(target = "certificateId_fk", source = "certificateMetadataEntity.id")
+    @Mapping(target = "certificateId", source = "certificateMetadataEntity.id")
     NoteDTOResponse toNoteDTOResponse(NoteEntity noteEntity);
 
     List<NoteDTOResponse> toNoteDTOResponseList(List<NoteEntity> entities);

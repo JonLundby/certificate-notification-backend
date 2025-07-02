@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.acme.inbound.dto.UriDTO;
+import org.acme.inbound.dto.UriDTOResponse;
 import org.acme.inbound.mapper.UriMapper;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.UriInboundPort;
@@ -26,8 +26,8 @@ public class URIInboundAdapter {
     @GET
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UriDTO> getAllUris() {
-        return uriMapper.toUriDtoList(uriInboundPort.findAll());
+    public List<UriDTOResponse> getAllUris() {
+        return uriMapper.toUriDTOResponseList(uriInboundPort.findAll());
     }
 
     // Manual scan
@@ -35,8 +35,8 @@ public class URIInboundAdapter {
     @Path("/scan")
     @Transactional
     @Produces(MediaType.APPLICATION_JSON) //
-    public List<UriDTO> scanUris(@QueryParam("notify") @DefaultValue("false") boolean notify) {
-        return uriMapper.toUriDtoList(uriInboundPort.dispatchAllUris(notify));
+    public List<UriDTOResponse> scanUris(@QueryParam("notify") @DefaultValue("false") boolean notify) {
+        return uriMapper.toUriDTOResponseList(uriInboundPort.dispatchAllUris(notify));
     }
 
     // Upload URIs
@@ -44,13 +44,13 @@ public class URIInboundAdapter {
     @Transactional
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UriDTO> receiveURIsStr(String uriStr) {
+    public List<UriDTOResponse> receiveURIsStr(String uriStr) {
         List<UriDomainModel> entities = uriInboundPort.createURIs(uriStr);
 
         if (entities.isEmpty()) {
             throw new BadRequestException("Invalid uri's in request, please review your list of uri's");
         }
 
-        return uriMapper.toUriDtoList(entities);
+        return uriMapper.toUriDTOResponseList(entities);
     }
 }

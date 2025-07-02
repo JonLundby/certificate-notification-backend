@@ -32,11 +32,11 @@ public class NoteDTOResponse {
         this.text = text;
     }
 
-    public long getCertificateId_fk() {
+    public long getCertificateId() {
         return certificateId;
     }
 
-    public void setCertificateId_fk(long certificateId_fk) {
-        this.certificateId = certificateId_fk;
+    public void setCertificateId(long certificateId) {
+        this.certificateId = certificateId;
     }
 }

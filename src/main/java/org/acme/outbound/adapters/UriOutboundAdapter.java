@@ -37,6 +37,7 @@ public class UriOutboundAdapter implements UriOutboundPort {
             uriRepository.persist(newEntities);
         }
 
+        // TODO: consider returning only the list of actually persisted URI (note that these URI have not yet gotten their certificateId set)
         return newEntities.stream().map(uriMapper::toDomain).toList();
     }
 
