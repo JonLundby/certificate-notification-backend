@@ -52,7 +52,6 @@ public class UriService implements UriInboundPort {
     }
 
     @Override
-    @Transactional
     public List<UriDomainModel> createURIs(String uriStr) {
         // Split, trim, filter and validate URIs
         List<String> rawUris = Stream.of(uriStr.split("\\R+"))
@@ -69,8 +68,12 @@ public class UriService implements UriInboundPort {
         // Adapter handles filtering of existing URIs
         List<UriDomainModel> uriDomainModels = uriOutboundPort.persistList(uriDomainModelsToPersist);
 
+        // TODO: Race conditions? - consider not doing the fireAsyncEvent and just scan ALL URI in database and not just recently uploaded batch of URIs
         // Fire events for all (optionally filter inside listener if necessary)
-        uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
+//        uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
+        // Alternatively scan all URI in db after upload (no race conditions)
+//        dispatchAllUris(false);
+
 
         return uriDomainModels;
     }

@@ -12,7 +12,6 @@ import org.acme.inbound.mapper.NoteMapper;
 import org.acme.outbound.model.CertificateMetadataEntity;
 import org.acme.outbound.model.NoteEntity;
 import org.acme.outbound.repository.CertificateMetadataRepository;
-import org.acme.outbound.repository.NoteRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,16 +39,18 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
     @Override
     public CertificateMetadata persist(CertificateMetadata certificateMetadata) {
         // Map metadata to entity
-        CertificateMetadataEntity e = certificateMetadataMapper.toEntity(certificateMetadata);
+        CertificateMetadataEntity entity = certificateMetadataMapper.toEntity(certificateMetadata);
 
         // save the entity
-        certificateMetadataRepository.persist(e);
+        certificateMetadataRepository.persist(entity);
 
-        // Flush transaction to make sure insert hits DB and entity is persisted
+        // Flush transaction to make sure certificate insert hits DB and entity is persisted...
+        // ...if not flushed then the scanned URI won't know what certificate id to relate to since id has not...
+        // ...yet been created due to being in transactional state
         certificateMetadataRepository.flush();
 
         // return the entity mapped back into a domain model
-        return certificateMetadataMapper.toDomain(e); // map back with ID
+        return certificateMetadataMapper.toDomain(entity); // map back with ID
     }
 
     @Override
@@ -110,4 +111,5 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
         certificateMetadataRepository.persist(entity);
     }
+
 }

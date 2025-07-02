@@ -126,8 +126,13 @@ public class CertificateService implements CertificateInboundPort {
                         notificationService.sendCertificationExpirationNotification(existingCert, uriDomainModel);
                     }
                 } else {
+                    // TODO: Beware of race conditions - only on fireAsync events.
+                    //  If 2 URI with same certificate(issuerSerialNumber) is uploaded then both will think certificate does not exist and try to persist the same certificate.
+                    //  Fix for now is to not scan URIs for certificates on upload but rather wait for the scheduled scan, have the user do a manual scan or implement dispatchAllUris in the URIService
+
                     // Save newly retrieved certificate metadata
                     CertificateMetadata savedCertMeta = certificateOutboundPort.persist(certMeta);
+//                    CertificateMetadata savedCertMeta = certificateOutboundPort.getOrCreate(certMeta);
 
                     // Update the URI certificate_id column with the id of the newly persisted certificateMetadata
                     uriOutboundPort.updateCertificateRelation(uriDomainModel.getUri(), savedCertMeta.getId());
