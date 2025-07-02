@@ -14,10 +14,12 @@ import java.util.List;
 public interface CertificateMetadataMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "uris", ignore = true) // ignore mapping back to source
+    @Mapping(target = "notes", ignore = true) // ignore mapping back to source
     CertificateMetadataEntity toEntity(CertificateMetadata certificateMetadata);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "uris", ignore = true) // ignore mapping back to source
+    @Mapping(target = "notes", ignore = true) // ignore mapping back to source
     CertificateMetadata toDomain(CertificateMetadataEntity certificateMetadataEntity);
 
     List<CertificateMetadata> toCertificateMetadataList(List<CertificateMetadataEntity> certificateMetadataEntities);

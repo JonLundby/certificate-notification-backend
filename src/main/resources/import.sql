@@ -9,6 +9,17 @@
 -- insert into urientity (uri) values('https://www.caniuse.com/');
 -- insert into urientity (uri) values('https://www.eb.dk');
 -- insert into urientity (uri) values('https://www.bt.dk');
+-- insert into urientity (uri) values('https://www.bt.dk');
+
+-- SPECIAL CASES
+    -- SAME CERTIFICATE
+-- insert into urientity (uri) values('https://www.youtube.com');
+-- insert into urientity (uri) values('https://youtube.com');
+
+    -- REDIRECTION SERVICE RESULTS IN TWO DIFFERENT CERTIFICATES
+-- insert into urientity (uri) values('https://www.bold.dk');
+-- insert into urientity (uri) values('https://bold.dk');
+
 -- -- LDAPS
 -- insert into urientity (uri) values('ldaps://ldap.jumpcloud.com');
 -- insert into urientity (uri) values('ldaps://ldap.google.com');
