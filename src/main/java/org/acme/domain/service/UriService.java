@@ -72,6 +72,7 @@ public class UriService implements UriInboundPort {
         // Fire events for all (optionally filter inside listener if necessary)
 //        uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
         // Alternatively scan all URI in db after upload (no race conditions)
+        // TODO: consider sending list of URI to the dispatcher so only that list is
 //        dispatchAllUris(false);
 
 
