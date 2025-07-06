@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.acme.domain.ports.UriOutboundPort;
 import org.acme.inbound.dto.UriDTOResponse;
 import org.acme.inbound.mapper.UriMapper;
 import org.acme.domain.model.UriDomainModel;

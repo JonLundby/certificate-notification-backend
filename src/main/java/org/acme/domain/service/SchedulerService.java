@@ -6,7 +6,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.UriInboundPort;
-import org.acme.domain.ports.UriOutboundPort;
 import org.jboss.logging.Logger;
 
 import java.time.Duration;
