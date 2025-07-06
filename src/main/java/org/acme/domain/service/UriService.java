@@ -3,10 +3,8 @@ package org.acme.domain.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
-import jakarta.enterprise.event.Event;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.model.enums.AllowedSchemes;
-import org.acme.domain.event.UriCreated;
 import org.acme.domain.ports.UriInboundPort;
 import org.acme.domain.ports.UriOutboundPort;
 import org.jboss.logging.Logger;
@@ -23,9 +21,6 @@ public class UriService implements UriInboundPort {
 
     @Inject
     UriOutboundPort uriOutboundPort;
-
-    @Inject
-    Event<UriCreated> uriCreatedEvent;
 
     @Inject
     CertificateService certificateService;
@@ -67,11 +62,7 @@ public class UriService implements UriInboundPort {
         // Adapter handles filtering of existing URIs
         List<UriDomainModel> uriDomainModels = uriOutboundPort.persistList(uriDomainModelsToPersist);
 
-        // TODO: Race conditions? - consider not doing the fireAsyncEvent and just scan ALL URI in database and not just recently uploaded batch of URIs
-        // Fire events for all (optionally filter inside listener if necessary)
-//        uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
-        // Alternatively scan all URI in db after upload (no race conditions)
-        // TODO: consider sending list of URI to the dispatcher so only that list is dispatched to the certificate retrieval logic
+        // Dispatch the list of newly updated URI to retrieve their certificates and set relations
         dispatchAllUris(uriDomainModels,false);
 
 
