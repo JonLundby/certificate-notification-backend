@@ -4,12 +4,15 @@ import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.UriInboundPort;
+import org.acme.domain.ports.UriOutboundPort;
 import org.jboss.logging.Logger;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @ApplicationScoped
 public class SchedulerService {
@@ -27,7 +30,8 @@ public class SchedulerService {
 
         logger.info("URI scanning initiated on: " + localDateTimeBefore);
 
-        uriInboundPort.dispatchAllUris(true);
+        List<UriDomainModel> allUris = uriInboundPort.findAll();
+        uriInboundPort.dispatchAllUris(allUris, true);
 
         Duration duration = Duration.between(localTimeBefore, LocalTime.now());
 

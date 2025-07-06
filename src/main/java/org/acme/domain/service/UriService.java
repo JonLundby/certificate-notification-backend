@@ -35,8 +35,8 @@ public class UriService implements UriInboundPort {
     }
 
     @Override
-    public List<UriDomainModel> dispatchAllUris(boolean sendNotifications) {
-        List<UriDomainModel> allUris = uriOutboundPort.findAllUris();
+    public List<UriDomainModel> dispatchAllUris(List<UriDomainModel> allUris, boolean sendNotifications) {
+//        List<UriDomainModel> allUris = uriOutboundPort.findAllUris();
 
         allUris.forEach(uriEntity -> {
             // try catch to make sure that the foreach continues in case of fx not being able to retrieve certificate from insecure TLS 1.1
@@ -71,8 +71,8 @@ public class UriService implements UriInboundPort {
         // Fire events for all (optionally filter inside listener if necessary)
 //        uriDomainModels.forEach(e -> uriCreatedEvent.fireAsync(new UriCreated(e.getUri())));
         // Alternatively scan all URI in db after upload (no race conditions)
-        // TODO: consider sending list of URI to the dispatcher so only that list is
-//        dispatchAllUris(false);
+        // TODO: consider sending list of URI to the dispatcher so only that list is dispatched to the certificate retrieval logic
+        dispatchAllUris(uriDomainModels,false);
 
 
         return uriDomainModels;

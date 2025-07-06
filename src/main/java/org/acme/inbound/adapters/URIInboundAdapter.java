@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.acme.domain.ports.UriOutboundPort;
 import org.acme.inbound.dto.UriDTOResponse;
 import org.acme.inbound.mapper.UriMapper;
 import org.acme.domain.model.UriDomainModel;
@@ -36,7 +37,8 @@ public class URIInboundAdapter {
     @Transactional
     @Produces(MediaType.APPLICATION_JSON) //
     public List<UriDTOResponse> scanUris(@QueryParam("notify") @DefaultValue("false") boolean notify) {
-        return uriMapper.toUriDTOResponseList(uriInboundPort.dispatchAllUris(notify));
+        List<UriDomainModel> allUris = uriInboundPort.findAll();
+        return uriMapper.toUriDTOResponseList(uriInboundPort.dispatchAllUris(allUris, notify));
     }
 
     // Upload URIs
