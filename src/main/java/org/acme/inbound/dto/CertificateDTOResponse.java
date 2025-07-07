@@ -1,45 +1,24 @@
-package org.acme.outbound.model;
-
-import jakarta.persistence.*;
+package org.acme.inbound.dto;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
-@Entity
-public class CertificateMetadataEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CertificateDTOResponse {
     private Long id;
-    @Column(nullable = false, unique = true)
     private String issuerSerialNumberId;
-    @Column(nullable = false)
     private String type;
-    @Column(nullable = false)
     private String subject;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
     private Date dateNotBefore;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
     private Date dateNotAfter;
     private LocalDateTime notifiedAt60Days;
     private LocalDateTime notifiedAt30Days;
     private LocalDateTime notifiedAt14Days;
-    // ---------- EDITABLE PROPERTIES ---------- \\
-    private String certificateLocation; // User edited property (filepath?)
-    private String passwordLocation; // User edited property (filepath?)
-    private String privateKeyLocation; // User edited property (filepath?)
-    // ---------- -------------------- ---------- \\
-
-    @OneToMany(mappedBy = "certificateMetadataEntity") // no cascading since URIs are long-lived and individual
-    private Set<UriEntity> uris = new HashSet<>(); // Must be a Set instead of List to avoid Hibernate's MultipleBagFetchException when using JOIN FETCH on multiple @OneToMany collections
-
-    @OneToMany(mappedBy = "certificateMetadataEntity", cascade = CascadeType.ALL)
-    private Set<NoteEntity> notes = new HashSet<>(); // Must also be a Set since otherwise notes will be duplicated if certificate has more uris/more rows
-
-
-    public CertificateMetadataEntity() {
-    }
+    private String certificateLocation;
+    private String passwordLocation;
+    private String privateKeyLocation;
+    private List<UriDTO> uris;
+    private List<NoteDTO> notes;
 
     public Long getId() {
         return id;
@@ -89,10 +68,6 @@ public class CertificateMetadataEntity {
         this.dateNotAfter = dateNotAfter;
     }
 
-    public boolean isNotifiedAt60Days() {
-        return notifiedAt60Days != null;
-    }
-
     public LocalDateTime getNotifiedAt60Days() {
         return notifiedAt60Days;
     }
@@ -101,20 +76,12 @@ public class CertificateMetadataEntity {
         this.notifiedAt60Days = notifiedAt60Days;
     }
 
-    public boolean isNotifiedAt30Days() {
-        return notifiedAt30Days != null;
-    }
-
     public LocalDateTime getNotifiedAt30Days() {
         return notifiedAt30Days;
     }
 
     public void setNotifiedAt30Days(LocalDateTime notifiedAt30Days) {
         this.notifiedAt30Days = notifiedAt30Days;
-    }
-
-    public boolean isNotifiedAt14Days() {
-        return notifiedAt14Days != null;
     }
 
     public LocalDateTime getNotifiedAt14Days() {
@@ -149,32 +116,19 @@ public class CertificateMetadataEntity {
         this.privateKeyLocation = privateKeyLocation;
     }
 
-    public Set<UriEntity> getUris() {
+    public List<UriDTO> getUris() {
         return uris;
     }
 
-    public void setUris(Set<UriEntity> uris) {
+    public void setUris(List<UriDTO> uris) {
         this.uris = uris;
     }
 
-    public Set<NoteEntity> getNotes() {
+    public List<NoteDTO> getNotes() {
         return notes;
     }
 
-    public void setNotes(Set<NoteEntity> notes) {
+    public void setNotes(List<NoteDTO> notes) {
         this.notes = notes;
-    }
-
-    @Override
-    public String toString() {
-        return "CertificateMetadataEntity{" +
-                "\n\tid=" + id +
-                "\n\tissuerSerialNumberId='" + issuerSerialNumberId + '\'' +
-                "\n\ttype='" + type + '\'' +
-                "\n\tsubject='" + subject + '\'' +
-                "\n\tdateNotBefore=" + dateNotBefore +
-                "\n\tdateNotAfter=" + dateNotAfter +
-                "\n\turis=" + uris +
-                '}';
     }
 }

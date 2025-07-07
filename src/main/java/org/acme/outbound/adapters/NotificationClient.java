@@ -8,7 +8,8 @@ import jakarta.ws.rs.core.MediaType;
 import org.acme.outbound.dto.NotificationPayloadDto;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@RegisterRestClient(configKey = "notification-client") // configKey refers to application.properties where the client address is configured
+// This RegisterRestClient is a MicroProfile REST client and tells Quarkus that the interface is meant to call an external HTTP service
+@RegisterRestClient(configKey = "notification-client") // configKey refers to application.properties where the client address/endpoint is configured
 @Path("/certapp")
 public interface NotificationClient {
 

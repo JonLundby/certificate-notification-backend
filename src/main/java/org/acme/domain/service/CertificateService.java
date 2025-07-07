@@ -3,6 +3,7 @@ package org.acme.domain.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import org.acme.inbound.dto.CertificateDTOResponse;
 import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
@@ -36,10 +37,10 @@ public class CertificateService implements CertificateInboundPort {
     @Inject
     NotificationService notificationService;
 
-    // GET ALL CERTIFICATES
+    // GET ALL CERTIFICATES WITH DETAILS (related uris & notes)
     @Override
-    public List<CertificateMetadata> getAllCertificates() {
-        return certificateOutboundPort.findAll();
+    public List<CertificateDTOResponse> getAllCertificatesWithDetails() {
+        return certificateOutboundPort.findAllWithDetails();
     }
 
     // ADD NOTE

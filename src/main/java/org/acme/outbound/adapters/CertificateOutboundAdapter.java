@@ -3,6 +3,7 @@ package org.acme.outbound.adapters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.acme.inbound.dto.CertificateDTOResponse;
 import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
@@ -29,11 +30,9 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
     @Inject
     CertificateMetadataRepository certificateMetadataRepository;
 
-    @Override
-    public List<CertificateMetadata> findAll() {
-        // TODO: this returns all certificateMetadataEntities but with empty 'uris' property due to mapstruct ignore uris for cyclic incidents.
-        //  Consider making custom mapping if uris should be populated properly (uriEntities carry FK to certificateMetadata so that will do for now)
-        return certificateMetadataMapper.toCertificateMetadataList(certificateMetadataRepository.findAll().list());
+    public List<CertificateDTOResponse> findAllWithDetails() {
+        List<CertificateMetadataEntity> entities = certificateMetadataRepository.findAllWithDetails();
+        return certificateMetadataMapper.toCertificateDTOResponseList(entities);
     }
 
     @Override
@@ -102,7 +101,7 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
         if (entity == null) {
             throw new IllegalArgumentException("Could not find certificate with id: " + certificateId);
         }
-        // TODO: Consider mapping from dto(or rather domain model due to corresponding changes in the inbound adapter) to domain model if need...
+        // TODO: Consider mapping from dto(or rather domain model due to possible corresponding future changes in the inbound adapter) to domain model if need...
         //  ...for more editable properties and/or service logic occurs
 
         entity.setCertificateLocation(certificateUpdateDTO.getCertificateLocation());

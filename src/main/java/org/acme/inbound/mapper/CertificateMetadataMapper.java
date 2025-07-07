@@ -1,6 +1,11 @@
 package org.acme.inbound.mapper;
 
 import org.acme.domain.model.CertificateMetadata;
+import org.acme.domain.model.Note;
+import org.acme.domain.model.UriDomainModel;
+import org.acme.inbound.dto.CertificateDTOResponse;
+import org.acme.inbound.dto.NoteDTO;
+import org.acme.inbound.dto.UriDTO;
 import org.acme.outbound.model.CertificateMetadataEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,6 +27,11 @@ public interface CertificateMetadataMapper {
     @Mapping(target = "notes", ignore = true) // ignore mapping back to source
     CertificateMetadata toDomain(CertificateMetadataEntity certificateMetadataEntity);
 
-    List<CertificateMetadata> toCertificateMetadataList(List<CertificateMetadataEntity> certificateMetadataEntities);
+    // ----------- FOR MAPPING FULL CERTIFICATEDTOREPONSE WITH URI AND NOTES ARRAYS POPULATED ----------- \\
+    @Mapping(target = "uris", source = "uris")
+    @Mapping(target = "notes", source = "notes")
+    CertificateDTOResponse toCertificateDTOResponse(CertificateMetadataEntity entity);
+
+    List<CertificateDTOResponse> toCertificateDTOResponseList(List<CertificateMetadataEntity> entities);
 
 }

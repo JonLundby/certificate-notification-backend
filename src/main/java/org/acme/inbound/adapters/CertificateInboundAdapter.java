@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.acme.inbound.dto.CertificateDTOResponse;
 import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.inbound.dto.NoteDTORequest;
 import org.acme.domain.model.CertificateMetadata;
@@ -23,10 +24,10 @@ public class CertificateInboundAdapter {
     @Inject
     CertificateInboundPort certificateInboundPort;
 
-    @GET()
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CertificateMetadata> getAllCertificates() {
-        return certificateInboundPort.getAllCertificates();
+    public List<CertificateDTOResponse> getAllCertificates() {
+        return certificateInboundPort.getAllCertificatesWithDetails();
     }
 
     @POST
