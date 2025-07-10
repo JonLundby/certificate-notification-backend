@@ -7,7 +7,6 @@ import jakarta.ws.rs.core.MediaType;
 import org.acme.inbound.dto.CertificateDTOResponse;
 import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.inbound.dto.NoteDTORequest;
-import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.inbound.dto.NoteDTOResponse;
@@ -42,8 +41,7 @@ public class CertificateInboundAdapter {
     @PUT
     @Path("{id}/editable-properties")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void updateEditableCertificateProperties(@PathParam("id") long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
-        // TODO: Consider mapping from dto to domain model if need for more editable properties and/or service logic occurs
-        certificateInboundPort.updateEditableCertificateProperties(certificateId, certificateUpdateDTO);
+    public CertificateDTOResponse updateEditableCertificateProperties(@PathParam("id") long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
+        return certificateInboundPort.updateEditableCertificateProperties(certificateId, certificateUpdateDTO);
     }
 }

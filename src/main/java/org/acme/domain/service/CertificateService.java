@@ -54,8 +54,8 @@ public class CertificateService implements CertificateInboundPort {
 
     // UPDATE EDITABLE PROPERTIES
     @Override
-    public void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
-        certificateOutboundPort.updateEditableCertificateProperties(certificateId, certificateUpdateDTO);
+    public CertificateDTOResponse updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
+        return certificateOutboundPort.updateEditableCertificateProperties(certificateId, certificateUpdateDTO);
     }
 
     // DELEGATOR

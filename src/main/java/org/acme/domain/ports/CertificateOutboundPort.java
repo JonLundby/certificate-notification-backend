@@ -16,5 +16,5 @@ public interface CertificateOutboundPort {
     Optional<CertificateMetadata> findByIssuerSerialNumberId(String issuerSerialNumberId);
     void updateNotifiedAt(CertificateMetadata certificateMetadata, LocalDateTime now, int daysNotification);
     NoteDTOResponse addNoteToCertificate(long certificateId, Note note);
-    void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO);
+    CertificateDTOResponse updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO);
 }

@@ -102,19 +102,21 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
     @Override
     @Transactional
-    public void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
+    public CertificateDTOResponse updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
         CertificateMetadataEntity entity = certificateMetadataRepository.findById(certificateId);
+
         if (entity == null) {
             throw new IllegalArgumentException("Could not find certificate with id: " + certificateId);
         }
-        // TODO: Consider mapping from dto(or rather domain model due to possible corresponding future changes in the inbound adapter) to domain model if need...
-        //  ...for more editable properties and/or service logic occurs
 
         entity.setCertificateLocation(certificateUpdateDTO.getCertificateLocation());
         entity.setPasswordLocation(certificateUpdateDTO.getPasswordLocation());
         entity.setPrivateKeyLocation(certificateUpdateDTO.getPrivateKeyLocation());
 
         certificateMetadataRepository.persist(entity);
+        certificateMetadataRepository.flush();
+
+        return certificateMetadataMapper.toCertificateDTOResponse(entity);
     }
 
 }

@@ -12,5 +12,5 @@ public interface CertificateInboundPort {
     List<CertificateDTOResponse> getAllCertificatesWithDetails();
     void retrieveCertificateMetadataDelegator(String uri, boolean sendNotifications);
     NoteDTOResponse addNoteToCertificate(long certificateId, Note note);
-    void updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO);
+    CertificateDTOResponse updateEditableCertificateProperties(long certificateId, CertificateUpdateDTO certificateUpdateDTO);
 }
