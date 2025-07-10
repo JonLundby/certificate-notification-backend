@@ -8,6 +8,7 @@ import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.CertificateOutboundPort;
+import org.acme.inbound.dto.NoteDTOResponse;
 import org.acme.inbound.mapper.CertificateMetadataMapper;
 import org.acme.inbound.mapper.NoteMapper;
 import org.acme.outbound.model.CertificateMetadataEntity;
@@ -77,7 +78,7 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
     @Override
     @Transactional
-    public void addNoteToCertificate(long certificateId, Note note) {
+    public NoteDTOResponse addNoteToCertificate(long certificateId, Note note) {
 
         // Load the owning certificate from the database
         CertificateMetadataEntity certificateMetadataEntity = certificateMetadataRepository.findById(certificateId);
@@ -92,6 +93,11 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
 
         // triggers hibernate to update the database based on the owning certificate and persist the note through that due to cascadeType.All
         certificateMetadataEntity.getNotes().add(noteEntity);
+        // hibernate needs to flush the transaction so that the noteEntity will get its generated ID populated...
+        // ...if no flush then hibernate will postpone the operation (and setting generated ID!) for efficiency
+        certificateMetadataRepository.flush();
+
+        return noteMapper.toNoteDTOResponse(noteEntity);
     }
 
     @Override

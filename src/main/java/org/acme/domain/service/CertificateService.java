@@ -11,6 +11,7 @@ import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.domain.ports.CertificateOutboundPort;
 import org.acme.domain.ports.UriOutboundPort;
+import org.acme.inbound.dto.NoteDTOResponse;
 
 import javax.net.ssl.*;
 import javax.security.auth.x500.X500Principal;
@@ -45,10 +46,10 @@ public class CertificateService implements CertificateInboundPort {
 
     // ADD NOTE
     @Override
-    public void addNoteToCertificate(long certificateId, Note note) {
+    public NoteDTOResponse addNoteToCertificate(long certificateId, Note note) {
         LocalDateTime now = LocalDateTime.now();
         note.setLocalDateTimeStamp(now);
-        certificateOutboundPort.addNoteToCertificate(certificateId, note);
+        return certificateOutboundPort.addNoteToCertificate(certificateId, note);
     }
 
     // UPDATE EDITABLE PROPERTIES

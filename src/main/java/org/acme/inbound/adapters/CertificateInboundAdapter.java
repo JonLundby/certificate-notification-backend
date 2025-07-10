@@ -10,6 +10,7 @@ import org.acme.inbound.dto.NoteDTORequest;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.CertificateInboundPort;
+import org.acme.inbound.dto.NoteDTOResponse;
 import org.acme.inbound.mapper.NoteMapper;
 
 import java.util.List;
@@ -33,9 +34,9 @@ public class CertificateInboundAdapter {
     @POST
     @Path("/{id}/notes")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addNoteToCertificate(@PathParam("id") long certificateId, NoteDTORequest noteDtoRequest) {
+    public NoteDTOResponse addNoteToCertificate(@PathParam("id") long certificateId, NoteDTORequest noteDtoRequest) {
         Note note = noteMapper.toDomainFromDTO(noteDtoRequest);
-        certificateInboundPort.addNoteToCertificate(certificateId, note);
+        return certificateInboundPort.addNoteToCertificate(certificateId, note);
     }
 
     @PUT
