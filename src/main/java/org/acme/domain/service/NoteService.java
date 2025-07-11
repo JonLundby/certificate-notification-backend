@@ -2,10 +2,12 @@ package org.acme.domain.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.acme.domain.model.Note;
 import org.acme.domain.ports.NoteInboundPort;
 import org.acme.domain.ports.NoteOutboundPort;
 import org.acme.inbound.dto.NoteDTOResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
@@ -17,5 +19,17 @@ public class NoteService implements NoteInboundPort {
     @Override
     public List<NoteDTOResponse> getAllNotes() {
         return noteOutboundPort.getAllNotes();
+    }
+
+    @Override
+    public NoteDTOResponse updateNoteText(long noteId, Note note) {
+        LocalDateTime now = LocalDateTime.now();
+        note.setLocalDateTimeStamp(now);
+        return noteOutboundPort.updateNoteText(noteId, note);
+    }
+
+    @Override
+    public NoteDTOResponse deleteNote(long noteId) {
+        return noteOutboundPort.deleteNote(noteId);
     }
 }

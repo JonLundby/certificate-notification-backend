@@ -41,6 +41,7 @@ public class CertificateInboundAdapter {
     @PUT
     @Path("{id}/editable-properties")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public CertificateDTOResponse updateEditableCertificateProperties(@PathParam("id") long certificateId, CertificateUpdateDTO certificateUpdateDTO) {
         return certificateInboundPort.updateEditableCertificateProperties(certificateId, certificateUpdateDTO);
     }
