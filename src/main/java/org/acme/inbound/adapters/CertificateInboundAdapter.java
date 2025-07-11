@@ -13,7 +13,6 @@ import org.acme.domain.ports.CertificateInboundPort;
 import org.acme.inbound.dto.NoteDTOResponse;
 import org.acme.inbound.mapper.CertificateMetadataMapper;
 import org.acme.inbound.mapper.NoteMapper;
-import org.jboss.resteasy.reactive.MultipartForm;
 import org.jboss.resteasy.reactive.RestForm;
 
 import java.io.InputStream;

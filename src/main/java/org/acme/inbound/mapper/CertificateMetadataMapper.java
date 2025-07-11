@@ -1,11 +1,7 @@
 package org.acme.inbound.mapper;
 
 import org.acme.domain.model.CertificateMetadata;
-import org.acme.domain.model.Note;
-import org.acme.domain.model.UriDomainModel;
 import org.acme.inbound.dto.CertificateDTOResponse;
-import org.acme.inbound.dto.NoteDTO;
-import org.acme.inbound.dto.UriDTO;
 import org.acme.outbound.model.CertificateMetadataEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
