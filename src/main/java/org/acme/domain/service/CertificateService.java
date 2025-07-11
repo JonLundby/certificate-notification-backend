@@ -16,9 +16,11 @@ import org.acme.inbound.dto.NoteDTOResponse;
 import javax.net.ssl.*;
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
@@ -230,4 +232,18 @@ public class CertificateService implements CertificateInboundPort {
         return certMeta;
     }
 
+    @Override
+    public CertificateMetadata uploadClientCertificate(InputStream fileInputStream) {
+        try {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+
+            X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
+
+            CertificateMetadata certificateMetadata = parseCertificateToCertificateMetadata(certificate);
+
+            return certificateOutboundPort.persist(certificateMetadata);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse uploaded certificate: ", e);
+        }
+    }
 }

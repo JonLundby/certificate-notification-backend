@@ -27,11 +27,15 @@ public interface CertificateMetadataMapper {
     @Mapping(target = "notes", ignore = true) // ignore mapping back to source
     CertificateMetadata toDomain(CertificateMetadataEntity certificateMetadataEntity);
 
-    // ----------- FOR MAPPING FULL CERTIFICATEDTOREPONSE WITH URI AND NOTES ARRAYS POPULATED ----------- \\
+    // FOR MAPPING FULL CERTIFICATE DTO RESPONSE WITH URI AND NOTES ARRAYS POPULATED
     @Mapping(target = "uris", source = "uris")
     @Mapping(target = "notes", source = "notes")
     CertificateDTOResponse toCertificateDTOResponse(CertificateMetadataEntity entity);
 
     List<CertificateDTOResponse> toCertificateDTOResponseList(List<CertificateMetadataEntity> entities);
 
+    // Domain Model to dto response (primarily for the)
+    @Mapping(target = "uris", source = "uris")
+    @Mapping(target = "notes", source = "notes")
+    CertificateDTOResponse toCertificateDTOResponseFromDomain(CertificateMetadata certificateMetadata);
 }
