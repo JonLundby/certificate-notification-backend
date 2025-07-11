@@ -1,6 +1,5 @@
 package org.acme.domain.ports;
 
-import jakarta.ws.rs.PathParam;
 import org.acme.domain.model.Note;
 import org.acme.inbound.dto.NoteDTOResponse;
 

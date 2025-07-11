@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.domain.model.Note;
 import org.acme.domain.ports.NoteOutboundPort;
-import org.acme.inbound.dto.NoteDTORequest;
 import org.acme.inbound.dto.NoteDTOResponse;
 import org.acme.inbound.mapper.NoteMapper;
 import org.acme.outbound.model.NoteEntity;
