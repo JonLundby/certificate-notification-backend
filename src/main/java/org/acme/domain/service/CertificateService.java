@@ -3,6 +3,7 @@ package org.acme.domain.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.WebApplicationException;
 import org.acme.inbound.dto.CertificateDTOResponse;
 import org.acme.inbound.dto.CertificateUpdateDTO;
 import org.acme.domain.model.CertificateMetadata;
@@ -234,14 +235,23 @@ public class CertificateService implements CertificateInboundPort {
 
     @Override
     public CertificateMetadata uploadClientCertificate(InputStream fileInputStream) {
-        try {
+
+        try (InputStream inputStream = fileInputStream){ // auto close the input stream
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 
             X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
 
             CertificateMetadata certificateMetadata = parseCertificateToCertificateMetadata(certificate);
 
+            Optional<CertificateMetadata> existing = certificateOutboundPort.findByIssuerSerialNumberId(certificateMetadata.getIssuerSerialNumberId());
+            if (existing.isPresent()) {
+                throw new WebApplicationException("Certificate already exists", 409);
+//                return existing.get(); // Returning the already exiting certificate (Alternatively throw a 409 Conflict if preferred)
+            }
+
             return certificateOutboundPort.persist(certificateMetadata);
+        } catch (WebApplicationException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse uploaded certificate: ", e);
         }
