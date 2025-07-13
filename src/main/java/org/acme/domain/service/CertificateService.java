@@ -239,7 +239,7 @@ public class CertificateService implements CertificateInboundPort {
         try (InputStream inputStream = fileInputStream){ // auto close the input stream
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 
-            X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(fileInputStream);
+            X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(inputStream);
 
             CertificateMetadata certificateMetadata = parseCertificateToCertificateMetadata(certificate);
 
