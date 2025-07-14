@@ -67,7 +67,19 @@ public class UriOutboundAdapter implements UriOutboundPort {
             throw new IllegalArgumentException("Certificate metadata not found: ID = " + certMetadataEntityId);
         }
 
+        // ----- Clean certificate for unrelated uri (part 1)----- \\
+        // not strictly necessary but should ensure getting correct uri in case of future use of Certificate.getUris()
+        // finding the old cert of the uri - will be the same as the new certEntity if the certificate has not been replaced
+        CertificateMetadataEntity oldCert = uriEntity.getCertificateMetadataEntity();
+        if (oldCert != null) {
+            oldCert.getUris().remove(uriEntity);
+        }
+
         // Set the managed object (no TransientObjectException)
         uriEntity.setCertificateMetadataEntity(certEntity);
+
+        // ----- Clean certificate for unrelated uri (part 2)----- \\
+        // adding the uri to the certificate side
+        certEntity.getUris().add(uriEntity);
     }
 }
