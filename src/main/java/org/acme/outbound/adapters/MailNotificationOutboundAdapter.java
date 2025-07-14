@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 public class MailNotificationOutboundAdapter implements MailNotificationOutboundPort {
 
     @Inject
-    Mailer mailer;
+    Mailer mailer; // No bean matches the injection point... but it works?
 
     @Override
-    public void sendMail(CertificateMetadata certMetadata, UriDomainModel uriDomainModel, LocalDateTime expiryDate) {
+    public void sendExpirationMail(CertificateMetadata certMetadata, UriDomainModel uriDomainModel, LocalDateTime expiryDate) {
         System.out.println("\n---------- SENDING MAIL ----------");
         mailer.send(
                 Mail.withText("someone@example.com",
@@ -26,4 +26,18 @@ public class MailNotificationOutboundAdapter implements MailNotificationOutbound
         );
     }
 
+    @Override
+    public void sendNewCertificateFoundNotification(CertificateMetadata certificateMetadata) {
+        int hashtagDividerIndex = certificateMetadata.getIssuerSerialNumberId().indexOf("#");
+        String issuer = certificateMetadata.getIssuerSerialNumberId().substring(0, hashtagDividerIndex);
+        String serialNumber = certificateMetadata.getIssuerSerialNumberId().substring(hashtagDividerIndex +1);
+
+        System.out.println("\n---------- SENDING MAIL ----------");
+        // use "List.of("user1@example.com", "user2@example.com")" to send to a list of emails
+        mailer.send(
+                Mail.withText("someone@example.com",
+                        "New certificate found",
+                        "New certificate found \nIssuer: " + issuer +"\nserial number: " + serialNumber)
+        );
+    }
 }

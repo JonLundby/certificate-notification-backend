@@ -128,7 +128,7 @@ public class CertificateService implements CertificateInboundPort {
 
                     // Send notifications
                     if (sendNotifications) {
-                        notificationService.sendCertificationExpirationNotification(existingCert, uriDomainModel);
+                        notificationService.sendCertificationExpirationNotification(existingCert.get(), uriDomainModel);
                     }
                 } else {
                     // Save newly retrieved certificate metadata
@@ -139,8 +139,10 @@ public class CertificateService implements CertificateInboundPort {
 
                     // Send notifications
                     if (sendNotifications) {
-                        notificationService.sendCertificationExpirationNotification(Optional.of(savedCertMeta), uriDomainModel);
+                        notificationService.sendCertificationExpirationNotification(savedCertMeta, uriDomainModel);
                     }
+                    // for sending notification on newly found certificates only
+                    notificationService.sendNewCertificateFoundNotification(savedCertMeta, uriDomainModel);
                 }
 
             }

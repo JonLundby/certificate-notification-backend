@@ -5,7 +5,8 @@ import jakarta.inject.Inject;
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.HttpNotificationOutboundPort;
-import org.acme.outbound.dto.NotificationPayloadDto;
+import org.acme.outbound.dto.ExpirationNotificationPayloadDto;
+import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
@@ -19,22 +20,21 @@ public class HttpNotificationOutboundAdapter implements HttpNotificationOutbound
     NotificationClient notificationClient;
 
     @Override
-    public void sendHttpNotification(CertificateMetadata certMetadata, UriDomainModel uriDomainModel) {
+    public void sendHttpExpirationNotification(ExpirationNotificationPayloadDto payloadDto) {
         try {
-
-            NotificationPayloadDto payload = new NotificationPayloadDto(
-                    uriDomainModel.getUri(),
-                    certMetadata.getDateNotAfter().toString()
-            );
-
             System.out.println("\n---------- SENDING HTTP Notification ----------");
-            System.out.println(payload);
+            System.out.println(payloadDto);
 
-            notificationClient.sendNotification(payload);
+            notificationClient.sendExpirationNotification(payloadDto);
             logger.info("Notification sent successfully to Mockoon");
 
         } catch (Exception e) {
             logger.error("Failed to send notification", e);
         }
+    }
+
+    @Override
+    public void sendNewCertificateFoundNotification(NewCertificateNotificationPayloadDto payload) {
+        notificationClient.sendNewCertificateNotification(payload);
     }
 }

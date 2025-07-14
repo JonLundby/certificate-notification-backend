@@ -1,13 +1,13 @@
 package org.acme.outbound.dto;
 
-public class NotificationPayloadDto {
+public class ExpirationNotificationPayloadDto {
     private String uri;
     private String certificateExpires;
 
-    public NotificationPayloadDto() {
+    public ExpirationNotificationPayloadDto() {
     }
 
-    public NotificationPayloadDto(String uri, String certificateExpires) {
+    public ExpirationNotificationPayloadDto(String uri, String certificateExpires) {
         this.uri = uri;
         this.certificateExpires = certificateExpires;
     }
