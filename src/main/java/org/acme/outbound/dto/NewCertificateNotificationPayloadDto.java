@@ -1,8 +1,5 @@
 package org.acme.outbound.dto;
 
-import org.acme.domain.model.CertificateMetadata;
-
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class NewCertificateNotificationPayloadDto {

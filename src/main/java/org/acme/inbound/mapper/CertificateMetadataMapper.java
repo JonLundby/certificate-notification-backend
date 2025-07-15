@@ -2,7 +2,6 @@ package org.acme.inbound.mapper;
 
 import org.acme.domain.model.CertificateMetadata;
 import org.acme.inbound.dto.CertificateDTOResponse;
-import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;
 import org.acme.outbound.model.CertificateMetadataEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

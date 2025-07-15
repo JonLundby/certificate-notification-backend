@@ -2,8 +2,6 @@ package org.acme.outbound.adapters;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.acme.domain.model.CertificateMetadata;
-import org.acme.domain.model.UriDomainModel;
 import org.acme.domain.ports.HttpNotificationOutboundPort;
 import org.acme.outbound.dto.ExpirationNotificationPayloadDto;
 import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;

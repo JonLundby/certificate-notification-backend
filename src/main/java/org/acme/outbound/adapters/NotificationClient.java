@@ -5,7 +5,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.acme.domain.model.CertificateMetadata;
 import org.acme.outbound.dto.ExpirationNotificationPayloadDto;
 import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;

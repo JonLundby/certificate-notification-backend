@@ -13,7 +13,6 @@ import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @ApplicationScoped
 public class NotificationService {
