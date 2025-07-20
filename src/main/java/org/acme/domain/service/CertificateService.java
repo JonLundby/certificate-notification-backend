@@ -174,11 +174,11 @@ public class CertificateService implements CertificateInboundPort {
                     // following two methods normally checks to validate the trusted CA's in the TrustManager but are here overridden with no functionality...
                     // ... so an empty TrustManager array is checked for nothing
                     public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                        // Trust all client certs
+                        // Trust all client certs since the method is overwritten to do nothing
                     }
 
                     public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                        // Trust all server certs
+                        // Trust all server certs since the method is overwritten to do nothing
                     }
                 }
         };
