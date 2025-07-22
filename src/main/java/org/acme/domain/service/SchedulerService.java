@@ -38,6 +38,4 @@ public class SchedulerService {
         logger.info("URI scan time took: " + duration.toMillis() + "ms");
 
     }
-
-    // TODO: implement scheduled scan for certificateMetadata entities and delete those with no URI relations
 }

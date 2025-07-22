@@ -64,8 +64,6 @@ public class CertificateService implements CertificateInboundPort {
     // DELEGATOR
     @Override
     public void retrieveCertificateMetadataDelegator(String uriStr, boolean sendNotifications) {
-        // TODO: consider making unit test of retrieveCertificateMetadataDelegator and/or the retrieveHTTPSCertificateMetadata etc.
-
         URI uri;
         try {
             uri = URI.create(uriStr);   // valid uri syntax check
@@ -83,11 +81,12 @@ public class CertificateService implements CertificateInboundPort {
                 break;
             case "ldaps":
                 port = 636;
+                // TODO: in case of needing tailored scanning of LDAPS Uri then replace 'retrieveCertificateViaTLS' with a tailored solution
                 retrieveCertificateViaTLS(uri, port, sendNotifications);
                 break;
             case "imaps":
-                // TODO: using the standard/default retrieveCertificateViaTLS might not retrieve the same certificate as for clients
                 port = 993;
+                // TODO: in case of needing tailored scanning of IMAPS Uri then replace 'retrieveCertificateViaTLS' with a tailored solution
                 retrieveCertificateViaTLS(uri, port, sendNotifications);
                 break;
             default:
