@@ -37,6 +37,12 @@ public class CertificateOutboundAdapter implements CertificateOutboundPort {
     }
 
     @Override
+    public List<CertificateMetadata> findValidClientCertificates() {
+        List<CertificateMetadataEntity> entities = certificateMetadataRepository.findValidClientCertificates();
+        return certificateMetadataMapper.toDomainList(entities);
+    }
+
+    @Override
     public CertificateMetadata persist(CertificateMetadata certificateMetadata) {
         // Map metadata to entity
         CertificateMetadataEntity entity = certificateMetadataMapper.toEntity(certificateMetadata);

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public interface CertificateOutboundPort {
     List<CertificateDTOResponse> findAllWithDetails();
+    List<CertificateMetadata> findValidClientCertificates();
     CertificateMetadata persist(CertificateMetadata certificateMetadata);
     Optional<CertificateMetadata> findByIssuerSerialNumberId(String issuerSerialNumberId);
     void updateNotifiedAt(CertificateMetadata certificateMetadata, LocalDateTime now, int daysNotification);

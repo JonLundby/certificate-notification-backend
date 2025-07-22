@@ -23,6 +23,8 @@ public interface CertificateMetadataMapper {
     @Mapping(target = "notes", ignore = true) // ignore mapping back to source
     CertificateMetadata toDomain(CertificateMetadataEntity certificateMetadataEntity);
 
+    List<CertificateMetadata> toDomainList(List<CertificateMetadataEntity> entities);
+
     // FOR MAPPING FULL CERTIFICATE DTO RESPONSE WITH URI AND NOTES ARRAYS POPULATED
     @Mapping(target = "uris", source = "uris")
     @Mapping(target = "notes", source = "notes")

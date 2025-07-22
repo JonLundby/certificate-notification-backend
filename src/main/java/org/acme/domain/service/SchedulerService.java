@@ -4,7 +4,9 @@ import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.acme.domain.model.CertificateMetadata;
 import org.acme.domain.model.UriDomainModel;
+import org.acme.domain.ports.CertificateOutboundPort;
 import org.acme.domain.ports.UriInboundPort;
 import org.jboss.logging.Logger;
 
@@ -21,7 +23,13 @@ public class SchedulerService {
     @Inject
     UriInboundPort uriInboundPort;
 
-    @Scheduled(cron = "0 32 12 * * ?") // Second Minute Hour Day DayOfWeek(1-7 or SUN-SAT)
+    @Inject
+    CertificateOutboundPort certificateOutboundPort;
+
+    @Inject
+    NotificationService notificationService;
+
+    @Scheduled(cron = "0 05 19 * * ?") // Second Minute Hour *every day *every month ?no specific DayOfWeek(or 1-7 or SUN-SAT)
     @Transactional
     public void scheduledUriScan() {
         LocalDateTime localDateTimeBefore = LocalDateTime.now();
@@ -37,5 +45,11 @@ public class SchedulerService {
         logger.info("URI scanning complete on: " + localDateTimeBefore);
         logger.info("URI scan time took: " + duration.toMillis() + "ms");
 
+    }
+
+    @Scheduled(cron = "0 10 19 * * ?")
+    public void scheduledClientCertificateExpirationScan() {
+        List<CertificateMetadata> clientCertificates = certificateOutboundPort.findValidClientCertificates();
+        notificationService.sendClientCertificateExpirationNotification(clientCertificates);
     }
 }

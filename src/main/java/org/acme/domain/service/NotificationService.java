@@ -10,9 +10,11 @@ import org.acme.domain.ports.MailNotificationOutboundPort;
 import org.acme.outbound.dto.ExpirationNotificationPayloadDto;
 import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @ApplicationScoped
 public class NotificationService {
@@ -25,6 +27,40 @@ public class NotificationService {
 
     @Inject
     CertificateOutboundPort certificateOutboundPort;
+
+    public void sendClientCertificateExpirationNotification(List<CertificateMetadata> certificateMetadataList) {
+        UriDomainModel uriDomainModel = new UriDomainModel();
+        LocalDateTime now = LocalDateTime.now();
+
+        certificateMetadataList.forEach(clientCertificate -> {
+            LocalDateTime expiryDate = clientCertificate.getDateNotAfter().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            long daysUntilExpiry = ChronoUnit.DAYS.between(now, expiryDate);
+
+            ExpirationNotificationPayloadDto payloadDto = new ExpirationNotificationPayloadDto(
+                    uriDomainModel.getUri(),
+                    clientCertificate.getDateNotAfter().toString()
+            );
+
+            if (daysUntilExpiry <= 60 && daysUntilExpiry > 30 && !clientCertificate.isNotifiedAt60Days()) {
+
+                mailNotificationOutboundPort.sendExpirationMail(clientCertificate, uriDomainModel, expiryDate);
+                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
+                certificateOutboundPort.updateNotifiedAt(clientCertificate, now, 60);
+
+            } else if (daysUntilExpiry <= 30 && daysUntilExpiry > 14 && !clientCertificate.isNotifiedAt30Days()) {
+
+                mailNotificationOutboundPort.sendExpirationMail(clientCertificate, uriDomainModel, expiryDate);
+                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
+                certificateOutboundPort.updateNotifiedAt(clientCertificate, now, 30);
+
+            } else if (daysUntilExpiry <= 14 && !clientCertificate.isNotifiedAt14Days()) {
+
+                mailNotificationOutboundPort.sendExpirationMail(clientCertificate, uriDomainModel, expiryDate);
+                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
+                certificateOutboundPort.updateNotifiedAt(clientCertificate, now, 14);
+            }
+        });
+    }
 
     public void sendCertificationExpirationNotification(CertificateMetadata certMetadata, UriDomainModel uriDomainModel) {
 
@@ -54,7 +90,6 @@ public class NotificationService {
                 mailNotificationOutboundPort.sendExpirationMail(certMetadata, uriDomainModel, expiryDate);
                 httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
                 certificateOutboundPort.updateNotifiedAt(certMetadata, now, 14);
-
             }
     }
 
