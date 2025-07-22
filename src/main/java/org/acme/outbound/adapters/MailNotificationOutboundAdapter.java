@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class MailNotificationOutboundAdapter implements MailNotificationOutboundPort {
 
     @Inject
-    Mailer mailer; // No bean matches the injection point... but it works?
+    Mailer mailer;
 
     @Override
     public void sendExpirationMail(CertificateMetadata certMetadata, UriDomainModel uriDomainModel, LocalDateTime expiryDate) {

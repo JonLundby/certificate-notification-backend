@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-// Do not make JPA annotations here in the domain class!!
+// Do not make JPA annotations here in the domain model class!! They belong in the outbound entity model :)
 public class CertificateMetadata {
     private Long id;
     private String issuerSerialNumberId;
