@@ -27,75 +27,56 @@ public class NotificationService {
     @Inject
     CertificateOutboundPort certificateOutboundPort;
 
+
     public void sendClientCertificateExpirationNotification(List<CertificateMetadata> certificateMetadataList) {
-        UriDomainModel uriDomainModel = new UriDomainModel();
-        LocalDateTime now = LocalDateTime.now();
-
         certificateMetadataList.forEach(clientCertificate -> {
-            LocalDateTime expiryDate = clientCertificate.getDateNotAfter().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            long daysUntilExpiry = ChronoUnit.DAYS.between(now, expiryDate);
-
-            ExpirationNotificationPayloadDto payloadDto = new ExpirationNotificationPayloadDto(
-                    uriDomainModel.getUri(),
-                    clientCertificate.getDateNotAfter().toString()
-            );
-
-            if (daysUntilExpiry <= 60 && daysUntilExpiry > 30 && !clientCertificate.isNotifiedAt60Days()) {
-
-                mailNotificationOutboundPort.sendExpirationMail(clientCertificate, uriDomainModel, expiryDate);
-                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
-                certificateOutboundPort.updateNotifiedAt(clientCertificate, now, 60);
-
-            } else if (daysUntilExpiry <= 30 && daysUntilExpiry > 14 && !clientCertificate.isNotifiedAt30Days()) {
-
-                mailNotificationOutboundPort.sendExpirationMail(clientCertificate, uriDomainModel, expiryDate);
-                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
-                certificateOutboundPort.updateNotifiedAt(clientCertificate, now, 30);
-
-            } else if (daysUntilExpiry <= 14 && !clientCertificate.isNotifiedAt14Days()) {
-
-                mailNotificationOutboundPort.sendExpirationMail(clientCertificate, uriDomainModel, expiryDate);
-                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
-                certificateOutboundPort.updateNotifiedAt(clientCertificate, now, 14);
-            }
+            UriDomainModel uriDomainModel = new UriDomainModel(); // Might be better if passed in or resolved dynamically
+            handleCertificateExpiration(clientCertificate, uriDomainModel);
         });
     }
 
     public void sendCertificationExpirationNotification(CertificateMetadata certMetadata, UriDomainModel uriDomainModel) {
+        handleCertificateExpiration(certMetadata, uriDomainModel);
+    }
 
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime expiryDate = certMetadata.getDateNotAfter().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            long daysUntilExpiry = ChronoUnit.DAYS.between(now, expiryDate);
+    private void handleCertificateExpiration(CertificateMetadata certMetadata, UriDomainModel uriDomainModel) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiryDate = certMetadata.getDateNotAfter().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        long daysUntilExpiry = ChronoUnit.DAYS.between(now, expiryDate);
 
-            ExpirationNotificationPayloadDto payloadDto = new ExpirationNotificationPayloadDto(
-                    uriDomainModel.getUri(),
-                    certMetadata.getDateNotAfter().toString()
-            );
+        ExpirationNotificationPayloadDto payloadDto = new ExpirationNotificationPayloadDto(
+                uriDomainModel.getUri(),
+                certMetadata.getDateNotAfter().toString()
+        );
 
-            if (daysUntilExpiry <= 60 && daysUntilExpiry > 30 && !certMetadata.isNotifiedAt60Days()) {
+        if (daysUntilExpiry <= 60 && daysUntilExpiry > 30 && !certMetadata.isNotifiedAt60Days()) {
+            notify(certMetadata, uriDomainModel, expiryDate, payloadDto, now, 60);
+        } else if (daysUntilExpiry <= 30 && daysUntilExpiry > 14 && !certMetadata.isNotifiedAt30Days()) {
+            notify(certMetadata, uriDomainModel, expiryDate, payloadDto, now, 30);
+        } else if (daysUntilExpiry <= 14 && !certMetadata.isNotifiedAt14Days()) {
+            notify(certMetadata, uriDomainModel, expiryDate, payloadDto, now, 14);
+        }
+    }
 
-                mailNotificationOutboundPort.sendExpirationMail(certMetadata, uriDomainModel, expiryDate);
-                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
-                certificateOutboundPort.updateNotifiedAt(certMetadata, now, 60);
-
-            } else if (daysUntilExpiry <= 30 && daysUntilExpiry > 14 && !certMetadata.isNotifiedAt30Days()) {
-
-                mailNotificationOutboundPort.sendExpirationMail(certMetadata, uriDomainModel, expiryDate);
-                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
-                certificateOutboundPort.updateNotifiedAt(certMetadata, now, 30);
-
-            } else if (daysUntilExpiry <= 14 && !certMetadata.isNotifiedAt14Days()) {
-
-                mailNotificationOutboundPort.sendExpirationMail(certMetadata, uriDomainModel, expiryDate);
-                httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
-                certificateOutboundPort.updateNotifiedAt(certMetadata, now, 14);
-            }
+    private void notify(
+            CertificateMetadata certMetadata,
+            UriDomainModel uriDomainModel,
+            LocalDateTime expiryDate,
+            ExpirationNotificationPayloadDto payloadDto,
+            LocalDateTime now,
+            int days
+    ) {
+        mailNotificationOutboundPort.sendExpirationMail(certMetadata, uriDomainModel, expiryDate);
+        httpNotificationOutboundPort.sendHttpExpirationNotification(payloadDto);
+        certificateOutboundPort.updateNotifiedAt(certMetadata, now, days);
     }
 
     public void sendNewCertificateFoundNotification(CertificateMetadata savedCertMeta, UriDomainModel uriDomainModel) {
         mailNotificationOutboundPort.sendNewCertificateFoundNotification(savedCertMeta);
 
-        //extracting issuer & serial number for http notification payload dto
+        // Extracting issuer & serial number for http notification payload dto
         int indexOfHashtagDivider = savedCertMeta.getIssuerSerialNumberId().indexOf("#");
         String issuer = savedCertMeta.getIssuerSerialNumberId().substring(0, indexOfHashtagDivider);
         String serialNumber = savedCertMeta.getIssuerSerialNumberId().substring(indexOfHashtagDivider + 1);
