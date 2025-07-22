@@ -5,24 +5,24 @@
 -- insert into myentity (id, field) values(3, 'field-3');
 -- alter sequence myentity_seq restart with 4;
 -- HTTPS
-insert into urientity (uri) values('https://www.example.com');
-insert into urientity (uri) values('https://www.caniuse.com');
-insert into urientity (uri) values('https://www.eb.dk');
-insert into urientity (uri) values('https://www.bt.dk');
+-- insert into urientity (uri) values('https://www.example.com');
+-- insert into urientity (uri) values('https://www.caniuse.com');
+-- insert into urientity (uri) values('https://www.eb.dk');
+-- insert into urientity (uri) values('https://www.bt.dk');
 
 -- SPECIAL CASES
     -- SAME CERTIFICATE
-insert into urientity (uri) values('https://www.youtube.com');
-insert into urientity (uri) values('https://youtube.com');
+-- insert into urientity (uri) values('https://www.youtube.com');
+-- insert into urientity (uri) values('https://youtube.com');
 
     -- REDIRECTION SERVICE RESULTS IN TWO DIFFERENT CERTIFICATES
-insert into urientity (uri) values('https://www.bold.dk');
-insert into urientity (uri) values('https://bold.dk');
+-- insert into urientity (uri) values('https://www.bold.dk');
+-- insert into urientity (uri) values('https://bold.dk');
 
 -- -- LDAPS
-insert into urientity (uri) values('ldaps://ldap.jumpcloud.com');
-insert into urientity (uri) values('ldaps://ldap.google.com');
+-- insert into urientity (uri) values('ldaps://ldap.jumpcloud.com');
+-- insert into urientity (uri) values('ldaps://ldap.google.com');
 -- -- IMAPS
-insert into urientity (uri) values('imaps://outlook.office365.com');
-insert into urientity (uri) values('imaps://imap.gmail.com');
-insert into urientity (uri) values('imaps://imap.mail.yahoo.com');
+-- insert into urientity (uri) values('imaps://outlook.office365.com');
+-- insert into urientity (uri) values('imaps://imap.gmail.com');
+-- insert into urientity (uri) values('imaps://imap.mail.yahoo.com');

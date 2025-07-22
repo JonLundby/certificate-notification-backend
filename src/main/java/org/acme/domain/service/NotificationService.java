@@ -10,7 +10,6 @@ import org.acme.domain.ports.MailNotificationOutboundPort;
 import org.acme.outbound.dto.ExpirationNotificationPayloadDto;
 import org.acme.outbound.dto.NewCertificateNotificationPayloadDto;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
