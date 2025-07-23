@@ -73,7 +73,7 @@ public class UriService implements UriInboundPort {
     private static String asValidUri(String rawUriStr) {
         URI uri;
         try {
-            uri = URI.create(rawUriStr);   // valid uri syntax check
+            uri = URI.create(rawUriStr);   // valid uri syntax check - ensures no illegal characters
         } catch (IllegalArgumentException e) {
             logger.errorf("Malformed URI: " + e);
             throw new BadRequestException("Malformed URI: " + rawUriStr, e);
@@ -90,11 +90,14 @@ public class UriService implements UriInboundPort {
                     allowedList
             );
 
-            //TODO: return bad request WITH PAYLOAD to client
             throw new BadRequestException(
                     "Scheme must be one of: " + allowedList + "; got: " + uri.getScheme()
             );
+        }
 
+        // Ensure host is present and not empty
+        if (uri.getHost() == null || uri.getHost().isBlank()) {
+            throw new BadRequestException("Malformed URI: missing or invalid host in " + rawUriStr);
         }
 
         return rawUriStr;
