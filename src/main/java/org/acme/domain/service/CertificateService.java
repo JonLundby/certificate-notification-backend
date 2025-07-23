@@ -18,6 +18,7 @@ import javax.net.ssl.*;
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
@@ -108,7 +109,7 @@ public class CertificateService implements CertificateInboundPort {
                 socket.setSoTimeout(10_000);
                 socket.startHandshake(); // startHandshake only allows TLS 1.2 & 1.3
 
-                // Instantiating certificate and populating certificateMetadata
+                // Instantiating (and casting) certificate
                 X509Certificate cert = (X509Certificate) socket.getSession().getPeerCertificates()[0];
 
                 // Parse the retrieved cert to certMetadata
@@ -145,15 +146,18 @@ public class CertificateService implements CertificateInboundPort {
                 }
 
             }
-        // TODO: consider making a NoValidCertificateFoundException or SSLHandshakeException
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unknown host: " + uri + " (" + e.getMessage() + ")", e);
+        } catch (SSLHandshakeException e) {
+            throw new RuntimeException("TLS handshake failed for " + uri + " (" + e.getMessage() + ")", e);
+        } catch (SocketTimeoutException e) {
+            throw new RuntimeException("Connection timed out for " + uri + " (" + e.getMessage() + ")", e);
         } catch (CertificateParsingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to parse certificate for " + uri, e);
+        } catch (IOException e) {
+            throw new RuntimeException("I/O error retrieving certificate from " + uri + " (" + e.getMessage() + ")", e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unexpected error retrieving certificate from " + uri + " (" + e.getMessage() + ")", e);
         }
     }
 
