@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class CertificateMetadataRepository implements PanacheRepository<CertificateMetadataEntity> {
-
     public Optional<CertificateMetadataEntity> findByIssuerSerialNumberId(String issuerSerialNumberId) {
         return Optional.ofNullable(find("issuerSerialNumberId", issuerSerialNumberId).firstResult());
     }
