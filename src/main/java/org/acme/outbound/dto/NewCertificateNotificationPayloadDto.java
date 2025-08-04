@@ -81,7 +81,7 @@ public class NewCertificateNotificationPayloadDto {
                 "  \"type\": \"" + type + "\",\n" +
                 "  \"subject\": \"" + subject + "\",\n" +
                 "  \"dateNotBefore\": \"" + dateNotBefore + "\",\n" +
-                "  \"dateNotAfter\": \"" + dateNotAfter + "\",\n" +
+                "  \"dateNotAfter\": \"" + dateNotAfter + "\"\n" +
                 "}";
     }
 }
