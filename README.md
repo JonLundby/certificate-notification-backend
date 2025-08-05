@@ -8,7 +8,7 @@ This is a Quarkus-based backend service for managing certificate expiration noti
 - **Java 21** (required)
 - **Maven 3.9+** (or use the included `mvnw` wrapper script)
 
-Clone this repository:
+Clone this repository & navigate to project directory:
    ```bash
    git clone <repo-url>
    cd certificate-notification-backend
