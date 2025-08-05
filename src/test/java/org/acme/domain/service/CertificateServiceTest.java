@@ -27,11 +27,54 @@ class CertificateServiceTest {
     @Mock
     UriOutboundPort uriOutboundPort;
 
+    // Testing that the delegator invokes the retrieval method on HTTPS and correct URI
     @Test
     void testRetrieveCertificateMetadataDelegator_https_shouldInvokeTLSRetrieval() {
         // Arrange
         int port = 443;
         String uriStr = "https://example.com";
+        URI uri = URI.create(uriStr);
+
+        // SpyService monitors the internal method calls
+        CertificateService spyService = Mockito.spy(certificateService);
+
+        // Act - don't make actual TLS handshake during the test
+        doNothing().when(spyService).retrieveCertificateViaTLS(uri, port, false);
+
+        // Act - spyService calls the retrieveCertificateMetadataDelegator with uri string
+        spyService.retrieveCertificateMetadataDelegator(uriStr, false);
+
+        // Assert - verify that spyService invoked a call to retrieveCertificateViaTLS after calling the delegator above
+        verify(spyService).retrieveCertificateViaTLS(uri, port, false);
+    }
+
+    // Testing that the delegator invokes the retrieval method on LDAPS and correct URI
+    @Test
+    void testRetrieveCertificateMetadataDelegator_ldaps_shouldInvokeTLSRetrieval() {
+        // Arrange
+        int port = 636;
+        String uriStr = "ldaps://ldap.google.com";
+        URI uri = URI.create(uriStr);
+
+        // SpyService monitors the internal method calls
+        CertificateService spyService = Mockito.spy(certificateService);
+
+        // Act - don't make actual TLS handshake during the test
+        doNothing().when(spyService).retrieveCertificateViaTLS(uri, port, false);
+
+        // Act - spyService calls the retrieveCertificateMetadataDelegator with uri string
+        spyService.retrieveCertificateMetadataDelegator(uriStr, false);
+
+        // Assert - verify that spyService invoked a call to retrieveCertificateViaTLS after calling the delegator above
+        verify(spyService).retrieveCertificateViaTLS(uri, port, false);
+    }
+
+    // Testing that the delegator invokes the retrieval method on IMAPS and correct URI
+    @Test
+    void testRetrieveCertificateMetadataDelegator_imaps_shouldInvokeTLSRetrieval() {
+        // Arrange
+        int port = 993;
+        String uriStr = "imaps://imap.gmail.com";
         URI uri = URI.create(uriStr);
 
         // SpyService monitors the internal method calls
