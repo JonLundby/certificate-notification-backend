@@ -1,5 +1,33 @@
 # certificate-notification-backend
 
+This is a Quarkus-based backend service for managing certificate expiration notifications and URI scanning.
+
+## How to Run
+
+### Prerequisites
+- **Java 21** (required)
+- **Maven 3.9+** (or use the included `mvnw` wrapper script)
+
+Clone this repository:
+   ```bash
+   git clone <repo-url>
+   cd certificate-notification-backend
+   ```
+
+Start the application in development mode (dependencies should download automatically):
+```bash
+   mvn quarkus:dev
+   ```
+or use the maven wrapper
+```bash
+   ./mvnw quarkus:dev   # Linux / Mac
+   mvnw.cmd quarkus:dev # Windows
+   ```
+
+Access the API at http://localhost:8080
+and the Quarkus Dev UI at http://localhost:8080/q/dev/.
+
+---
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
